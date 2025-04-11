@@ -127,18 +127,8 @@ class WindowManager {
                 val requestedSize = it.key.expectedSize
                 val isOnTop = windowOrder.last() == it.key
 
-                // region window shaker
-                val shouldShaking = shaker.contains(window)
-                val infiniteTransition = rememberInfiniteTransition()
-                val shaker = infiniteTransition.animateFloat(
-                    initialValue = if (shouldShaking) -10f else 0f,
-                    targetValue = if (shouldShaking) 10f else 0f,
-                    animationSpec = infiniteRepeatable(
-                        animation = tween(150, easing = LinearEasing),
-                        repeatMode = RepeatMode.Reverse
-                    )
-                )
-                // endregion
+                // shaker
+                val shakerAnimation = shakerAnimation(shaker.contains(window))
 
                 window.Draw(
                     modifier = Modifier.Companion
@@ -151,7 +141,7 @@ class WindowManager {
                             }
                         }
                         .zIndex(zIndex)
-                        .rotate(shaker.value)
+                        .rotate(shakerAnimation.value)
                         .shadow(
                             if (isOnTop) 4.dp else 1.dp,
                             RoundedCornerShape(16.dp)
@@ -166,4 +156,19 @@ class WindowManager {
             }
         }
     }
+}
+
+@Composable
+fun shakerAnimation(isShaking: Boolean): State<Float> {
+    if (!isShaking) return derivedStateOf { 0f }
+
+    val infiniteTransition = rememberInfiniteTransition()
+    return infiniteTransition.animateFloat(
+        initialValue = -10f,
+        targetValue = 10f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(150, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
 }
