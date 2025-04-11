@@ -9,7 +9,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import kotlinx.coroutines.launch
 
 class Window(
     val wm: WindowManager,
@@ -27,12 +29,18 @@ class Window(
     @OptIn(ExperimentalFoundationApi::class)
     @Composable
     fun Draw(modifier: Modifier = Modifier.Companion) {
+        val scope = rememberCoroutineScope()
+
         Scaffold(
             modifier = modifier,
             topBar = {
                 TopBar(
                     modifier = Modifier.Companion
-                        .onDrag { wm.move(this@Window, it) },
+                        .onDrag {
+                            scope.launch {
+                                wm.move(this@Window, it)
+                            }
+                        },
                     title = title.value,
                     onClose = { wm.close(this@Window) }
                 )

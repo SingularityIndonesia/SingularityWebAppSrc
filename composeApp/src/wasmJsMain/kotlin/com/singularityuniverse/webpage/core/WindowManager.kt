@@ -54,7 +54,13 @@ class WindowManager {
         return true
     }
 
-    fun bringToFront(window: Window): Boolean {
+    suspend fun bringToFront(window: Window): Boolean {
+        val isOnTheFKNGTop = windowOrder.lastOrNull() == window
+        if (isOnTheFKNGTop) {
+            shake(window)
+            return true
+        }
+
         windowOrder.remove(window)
         windowOrder.add(window)
         return true
@@ -66,7 +72,7 @@ class WindowManager {
         return true
     }
 
-    fun move(window: Window, by: Offset) {
+    suspend fun move(window: Window, by: Offset) {
         val currentPos = windowPosition[window] ?: return
         val newPos = currentPos + by.let { IntOffset(x = it.x.toInt(), y = it.y.toInt()) }
         windowPosition[window] = newPos
@@ -140,7 +146,9 @@ class WindowManager {
                         .offset { position }
                         .onGloballyPositioned {
                             val yOffset = it.positionInParent().y.takeIf { it < 0 } ?: return@onGloballyPositioned
-                            move(window, Offset(x = 0f, y = yOffset.absoluteValue))
+                            scope.launch {
+                                move(window, Offset(x = 0f, y = yOffset.absoluteValue))
+                            }
                         }
                         .zIndex(zIndex)
                         .rotate(shaker.value)
@@ -149,11 +157,10 @@ class WindowManager {
                             RoundedCornerShape(16.dp)
                         )
                         .onClick {
-                            val isOnTheFKNGTop = windowOrder.lastOrNull() == it
-                            if (isOnTheFKNGTop)
-                                scope.launch { shake(it) }
-
-                            bringToFront(it.key)
+                            scope.launch {
+                                if (!isOnTop)
+                                    bringToFront(it.key)
+                            }
                         }
                 )
             }
