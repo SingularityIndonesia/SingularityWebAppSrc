@@ -1,24 +1,32 @@
 package com.singularityuniverse.webpage.application
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.onClick
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.singularityuniverse.webpage.core.Application
 import org.jetbrains.compose.resources.painterResource
+import org.w3c.dom.Text
 import singularityuniverse.composeapp.generated.resources.Res
 import singularityuniverse.composeapp.generated.resources.logo_of_singularity_indonesia
 
-class About : Application(){
+class About : Application() {
     override val title: String = "About"
     override val defaultMinSize: DpSize = DpSize(300.dp, 400.dp)
 
@@ -44,6 +52,26 @@ class About : Application(){
             Text(
                 text = "v0.0.0-proto",
                 style = MaterialTheme.typography.overline
+            )
+        }
+    }
+
+    @OptIn(ExperimentalFoundationApi::class)
+    @Composable
+    override fun Icon(modifier: Modifier, onClick: () -> Unit) {
+        Box(
+            modifier = modifier
+                .clip(RoundedCornerShape(8.dp))
+                .background(MaterialTheme.colors.surface)
+                .onClick { onClick.invoke() },
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                modifier = Modifier,
+                text = "A",
+                style = MaterialTheme.typography.overline,
+                color = MaterialTheme.colors.onSurface,
+                fontSize = 32.sp
             )
         }
     }

@@ -9,6 +9,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -19,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.singularityuniverse.webpage.core.Application
 import com.singularityuniverse.webpage.core.Window
 import com.singularityuniverse.webpage.core.WindowManager
+import kotlinx.coroutines.launch
 
 class Desktop : Application() {
     override val title: String = "Desktop"
@@ -27,14 +29,27 @@ class Desktop : Application() {
     private val applications = mutableStateListOf<Application>(Calculator(), About())
     private val windows = mutableStateListOf<Window>()
 
+    suspend fun openApp(application: Application) {
+        if (!applications.contains(application)) {
+            applications.add(application)
+        }
+
+        val window = windows.firstOrNull { it.app == application } ?: run {
+            val w = windowManager.requestWindow(application)
+            windows += w
+            w
+        }
+
+        windowManager.open(window)
+    }
+
     @Composable
     override fun Draw(modifier: Modifier) {
         val topApplication = windowManager.windowOrder.lastOrNull()?.app
+        val scope = rememberCoroutineScope()
 
         LaunchedEffect(Unit) {
-            // open about on init
-            windows += applications.map { windowManager.requestWindow(it) }
-            windows.forEach { windowManager.open(it) }
+            openApp(applications.firstOrNull { it is About } ?: return@LaunchedEffect)
         }
 
         Scaffold(
@@ -48,6 +63,22 @@ class Desktop : Application() {
                         .height(25.dp),
                     context = topApplication?.title.orEmpty()
                 )
+            },
+            bottomBar = {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    BottomAppBar(
+                        modifier = Modifier.padding(8.dp),
+                        appList = applications,
+                        onAppClicked = { app ->
+                            scope.launch {
+                                openApp(app)
+                            }
+                        }
+                    )
+                }
             },
             backgroundColor = Color.Blue.copy(alpha = .7f)
         ) {
@@ -80,4 +111,28 @@ private fun StatusBar(
     }
 }
 
-
+@Composable
+private fun BottomAppBar(
+    modifier: Modifier = Modifier,
+    appList: List<Application>,
+    onAppClicked: (Application) -> Unit
+) {
+    Row(
+        modifier = modifier
+            .padding(8.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(Color.White.copy(alpha = .7f))
+            .padding(horizontal = 8.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        appList.forEach {
+            it.Icon(
+                modifier = Modifier.size(48.dp),
+                onClick = {
+                    onAppClicked.invoke(it)
+                }
+            )
+        }
+    }
+}
