@@ -92,30 +92,38 @@ class WindowManager {
                 false
             }
             val currentWindowCenter = currentWindowStart + window.center.x
-            val currentWindowEnd = { currentWindowStart + window.currentSize.value.width }
+            val currentWindowEnd = currentWindowStart + window.currentSize.value.width
+            val currentWindowOccupation = currentWindowStart..currentWindowEnd
 
             // animate expose target window
             val delayBackToPosition = mutableMapOf<Window, IntOffset>()
             otherWindowsOnTopOfIt.forEach { subordinate ->
                 val subOrdinateStart = windowPosition[subordinate]?.x ?: 0
-                val subOrdinateEnd = { subOrdinateStart + subordinate.currentSize.value.width }
+                val subOrdinateEnd = subOrdinateStart + subordinate.currentSize.value.width
                 val subOrdinateCenter = subOrdinateStart + subordinate.center.x
-                // -1 (left); 0 (perfect center); 1 (right)
-                val overlapDirection = (subOrdinateCenter - currentWindowCenter).let { it / it.absoluteValue }
+
+                // -1 (left); 0 (perfect center); 1 (right); null (not overlapping)
+                val overlapDirection = run {
+                    val subordinateOccupation = subOrdinateStart..subOrdinateEnd
+
+                    // ignore if subordinate occupation not overlapping currentWindowOccupation
+                    if (!subordinateOccupation.any { it in currentWindowOccupation }) return@run null
+
+                    (subOrdinateCenter - currentWindowCenter).let { it / it.absoluteValue }
+                } ?: return@forEach // ignore if not overlapping
+
                 val overlapMagnitude = when (overlapDirection) {
-                    // if prefect center assume right
-                    0, 1 -> {
-                        currentWindowEnd() - subOrdinateStart + ((screenDensity?.absoluteValue
-                            ?: 1f) * 16)// extra 16 dp
-                    }
-
                     -1 -> {
-                        currentWindowStart - subOrdinateEnd() - ((screenDensity?.absoluteValue
+                        currentWindowStart - subOrdinateEnd - ((screenDensity?.absoluteValue
                             ?: 1f) * 16)// extra 16 dp
                     }
 
-                    else -> 0
+                    else -> {
+                        currentWindowEnd - subOrdinateStart + ((screenDensity?.absoluteValue
+                            ?: 1f) * 16)// extra 16 dp
+                    }
                 }.toInt()
+
                 val targetPos = IntOffset(overlapMagnitude, 0)
 
                 delayBackToPosition[subordinate] = targetPos
@@ -125,6 +133,12 @@ class WindowManager {
             // bring target window to the top
             windowOrder.remove(window)
             windowOrder.add(window)
+
+            // if no window overlapping shake it
+            if (delayBackToPosition.isEmpty()) {
+                shake(window)
+                return@async
+            }
 
             // animate back to position
             delayBackToPosition.forEach {
