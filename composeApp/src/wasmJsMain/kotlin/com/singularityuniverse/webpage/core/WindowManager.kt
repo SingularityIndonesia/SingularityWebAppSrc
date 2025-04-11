@@ -1,9 +1,7 @@
 package com.singularityuniverse.webpage.core
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.onClick
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -17,6 +15,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.center
@@ -26,11 +25,11 @@ import kotlinx.coroutines.delay
 import kotlin.math.absoluteValue
 
 class WindowManager {
-    private var playGroundSize: IntSize? = null
-    private var screenDensity: Float? = null
-    private val windows = mutableStateListOf<Window>()
-    private val windowPosition = mutableStateMapOf<Window, IntOffset>()
-    private val windowOrder = mutableStateListOf<Window>()
+    var playGroundSize: IntSize? = null
+    var screenDensity: Float? = null
+    val windows = mutableStateListOf<Window>()
+    val windowPosition = mutableStateMapOf<Window, IntOffset>()
+    val windowOrder = mutableStateListOf<Window>()
 
     suspend fun open(window: Window): Boolean {
         if (windowOrder.contains(window)) {
@@ -88,7 +87,8 @@ class WindowManager {
     @OptIn(ExperimentalFoundationApi::class)
     @Composable
     fun Draw(
-        modifier: Modifier = Modifier.Companion
+        modifier: Modifier = Modifier.Companion,
+        safeContentPadding: PaddingValues,
     ) {
         val density = LocalDensity.current
 
@@ -97,8 +97,12 @@ class WindowManager {
         }
 
         Box(
-            modifier = Modifier.Companion
-                .onSizeChanged { playGroundSize = it }
+            modifier = Modifier
+                .padding(safeContentPadding)
+                .onSizeChanged {
+                    if (it.height <= 0) return@onSizeChanged
+                    playGroundSize = it
+                }
                 .then(modifier)
         ) {
             windowPosition.forEach {
