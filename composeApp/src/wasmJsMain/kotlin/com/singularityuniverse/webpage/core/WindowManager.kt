@@ -1,27 +1,26 @@
 package com.singularityuniverse.webpage.core
 
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.onClick
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.center
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
 class WindowManager {
@@ -30,6 +29,7 @@ class WindowManager {
     val windows = mutableStateListOf<Window>()
     val windowPosition = mutableStateMapOf<Window, IntOffset>()
     val windowOrder = mutableStateListOf<Window>()
+    val shaker = mutableStateListOf<Window>()
 
     suspend fun open(window: Window): Boolean {
         if (windowOrder.contains(window)) {
@@ -78,6 +78,14 @@ class WindowManager {
         }
     }
 
+    suspend fun shake(window: Window) {
+        if (shaker.contains(window)) return
+
+        shaker.add(window)
+        delay(500)
+        shaker.remove(window)
+    }
+
     fun requestWindow(application: Application): Window {
         val window = Window(this, application)
         windows.add(window)
@@ -90,6 +98,7 @@ class WindowManager {
         modifier: Modifier = Modifier.Companion,
         safeContentPadding: PaddingValues,
     ) {
+        val scope = rememberCoroutineScope()
         val density = LocalDensity.current
 
         LaunchedEffect(density.density) {
@@ -112,6 +121,19 @@ class WindowManager {
                 val requestedSize = it.key.expectedSize
                 val isOnTop = windowOrder.last() == it.key
 
+                // region window shaker
+                val shouldShaking = shaker.contains(window)
+                val infiniteTransition = rememberInfiniteTransition()
+                val shaker = infiniteTransition.animateFloat(
+                    initialValue = if (shouldShaking) -10f else 0f,
+                    targetValue = if (shouldShaking) 10f else 0f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(150, easing = LinearEasing),
+                        repeatMode = RepeatMode.Reverse
+                    )
+                )
+                // endregion
+
                 window.Draw(
                     modifier = Modifier.Companion
                         .size(requestedSize)
@@ -121,11 +143,18 @@ class WindowManager {
                             move(window, Offset(x = 0f, y = yOffset.absoluteValue))
                         }
                         .zIndex(zIndex)
+                        .rotate(shaker.value)
                         .shadow(
                             if (isOnTop) 4.dp else 1.dp,
                             RoundedCornerShape(16.dp)
                         )
-                        .onClick { bringToFront(it.key) }
+                        .onClick {
+                            val isOnTheFKNGTop = windowOrder.lastOrNull() == it
+                            if (isOnTheFKNGTop)
+                                scope.launch { shake(it) }
+
+                            bringToFront(it.key)
+                        }
                 )
             }
         }

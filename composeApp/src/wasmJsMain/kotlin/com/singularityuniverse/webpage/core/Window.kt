@@ -32,11 +32,7 @@ class Window(
             topBar = {
                 TopBar(
                     modifier = Modifier.Companion
-                        .onDrag(
-                            onDrag = {
-                                wm.move(this@Window, it)
-                            }
-                        ),
+                        .onDrag { wm.move(this@Window, it) },
                     title = title.value,
                     onClose = { wm.close(this@Window) }
                 )
