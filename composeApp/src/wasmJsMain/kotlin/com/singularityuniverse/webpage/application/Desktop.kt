@@ -24,7 +24,7 @@ class Desktop : Application() {
     override val title: String = "Desktop"
     override val defaultMinSize: DpSize = DpSize.Unspecified
     private val windowManager = WindowManager()
-    private val applications = mutableStateListOf<Application>(About())
+    private val applications = mutableStateListOf<Application>(Calculator(), About())
     private val windows = mutableStateListOf<Window>()
 
     @Composable
@@ -33,8 +33,8 @@ class Desktop : Application() {
 
         LaunchedEffect(Unit) {
             // open about on init
-            windows += windowManager.requestWindow(applications.first())
-            windowManager.open(windows.first { it.app is About })
+            windows += applications.map { windowManager.requestWindow(it) }
+            windows.forEach { windowManager.open(it) }
         }
 
         Scaffold(

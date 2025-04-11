@@ -1,9 +1,14 @@
 package com.singularityuniverse.webpage.application
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -11,6 +16,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -20,9 +26,9 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.singularityuniverse.webpage.core.Application
 
-class Calculator: Application() {
+class Calculator : Application() {
     override val title: String = "Calculator"
-    override val defaultMinSize: DpSize = DpSize(400.dp, 400.dp)
+    override val defaultMinSize: DpSize = DpSize(400.dp, 500.dp)
     private val log = mutableStateOf("")
 
     @Composable
@@ -30,8 +36,7 @@ class Calculator: Application() {
         Column(
             modifier = modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colors.background)
-                .padding(8.dp),
+                .background(MaterialTheme.colors.background),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Logger(
@@ -42,7 +47,9 @@ class Calculator: Application() {
             )
 
             InputPane(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxWidth(),
                 onInput = {
                     // on clear
                     if (it == "C") {
@@ -91,19 +98,32 @@ class Calculator: Application() {
         return "Hello World"
     }
 }
+
 @Composable
 private fun Logger(
     modifier: Modifier = Modifier,
     log: String
 ) {
-    Box(
+    val state = rememberLazyListState()
+    val lines = remember(log) { log.lines() }
+
+    LazyColumn(
         modifier = modifier,
-        contentAlignment = Alignment.BottomEnd
+        state = state,
+        contentPadding = PaddingValues(8.dp),
+        horizontalAlignment = Alignment.End,
     ) {
-        Text(
-            text = log,
-            textAlign = TextAlign.End
-        )
+        items(lines.size) {
+            val line = lines[it]
+            Text(
+                text = line,
+                textAlign = TextAlign.End
+            )
+        }
+    }
+
+    LaunchedEffect(lines) {
+        state.animateScrollToItem(lines.size - 1)
     }
 }
 
@@ -122,7 +142,7 @@ private fun InputPane(
     }
     LazyVerticalGrid(
         modifier = modifier,
-        columns = GridCells.Fixed(4)
+        columns = GridCells.Fixed(4),
     ) {
         items(inputs.size) {
             val item = inputs[it]
