@@ -18,10 +18,19 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.center
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastRoundToInt
 import androidx.compose.ui.zIndex
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.math.absoluteValue
+import kotlin.math.roundToInt
+import kotlin.math.sqrt
 
 class WindowManager {
     var playGroundSize: IntSize? = null
@@ -33,7 +42,7 @@ class WindowManager {
 
     suspend fun open(window: Window): Boolean {
         if (windowOrder.contains(window)) {
-            return bringToFront(window)
+            return bringToFront(window, true)
         }
 
         if (playGroundSize == null || screenDensity == null) {
@@ -54,16 +63,77 @@ class WindowManager {
         return true
     }
 
-    suspend fun bringToFront(window: Window): Boolean {
+    private var bringToFrontJob: Deferred<Unit>? = null
+    suspend fun bringToFront(window: Window, animated: Boolean = false): Boolean = coroutineScope {
         val isOnTheFKNGTop = windowOrder.lastOrNull() == window
         if (isOnTheFKNGTop) {
             shake(window)
-            return true
+            return@coroutineScope true
         }
 
-        windowOrder.remove(window)
-        windowOrder.add(window)
-        return true
+        if (!animated) {
+            windowOrder.remove(window)
+            windowOrder.add(window)
+            return@coroutineScope true
+        }
+
+        // region sliding gimmick
+        bringToFrontJob?.await() // ensure last animation is finished
+
+        bringToFrontJob = async {
+            val otherWindowsOnTopOfIt = run {
+                val currentWindowPos = windowOrder.indexOf(window)
+                val windowsOnTop = windowOrder.subList(currentWindowPos + 1, windowOrder.size)
+                windowsOnTop
+            }
+
+            val currentWindowStart = windowPosition[window]?.x ?: return@async run {
+                println("ERROR: window is not registered in windowPosition")
+                false
+            }
+            val currentWindowCenter = currentWindowStart + window.center.x
+            val currentWindowEnd = { currentWindowStart + window.currentSize.value.width }
+
+            // animate expose target window
+            val delayBackToPosition = mutableMapOf<Window, IntOffset>()
+            otherWindowsOnTopOfIt.forEach { subordinate ->
+                val subOrdinateStart = windowPosition[subordinate]?.x ?: 0
+                val subOrdinateEnd = { subOrdinateStart + subordinate.currentSize.value.width }
+                val subOrdinateCenter = subOrdinateStart + subordinate.center.x
+                // -1 (left); 0 (perfect center); 1 (right)
+                val overlapDirection = (subOrdinateCenter - currentWindowCenter).let { it / it.absoluteValue }
+                val overlapMagnitude = when (overlapDirection) {
+                    // if prefect center assume right
+                    0, 1 -> {
+                        currentWindowEnd() - subOrdinateStart + ((screenDensity?.absoluteValue
+                            ?: 1f) * 16)// extra 16 dp
+                    }
+
+                    -1 -> {
+                        currentWindowStart - subOrdinateEnd() - ((screenDensity?.absoluteValue
+                            ?: 1f) * 16)// extra 16 dp
+                    }
+
+                    else -> 0
+                }.toInt()
+                val targetPos = IntOffset(overlapMagnitude, 0)
+
+                delayBackToPosition[subordinate] = targetPos
+                animateMove(subordinate, targetPos)
+            }
+
+            // bring target window to the top
+            windowOrder.remove(window)
+            windowOrder.add(window)
+
+            // animate back to position
+            delayBackToPosition.forEach {
+                animateMove(it.key, it.value.times(-1f))
+            }
+            // endregion
+        }
+
+        true
     }
 
     fun close(window: Window): Boolean {
@@ -82,6 +152,27 @@ class WindowManager {
             if (window != windowOrder.last())
                 bringToFront(window)
         }
+    }
+
+    suspend fun animateMove(window: Window, by: IntOffset, durationMillis: Int = 150) {
+        val frameDuration = 1000L / 60L // = 60 fps
+        val steps = (durationMillis / frameDuration).toInt()
+
+        val start = windowPosition[window] ?: return
+        val end = start + by
+
+        for (i in 1..steps) {
+            val t = i / steps.toFloat()
+            val interpolated = IntOffset(
+                x = (start.x + by.x * t).toInt(),
+                y = (start.y + by.y * t).toInt()
+            )
+            windowPosition[window] = interpolated
+            delay(frameDuration)
+        }
+
+        // Ensure final position is accurate
+        windowPosition[window] = end
     }
 
     suspend fun shake(window: Window) {
@@ -149,7 +240,7 @@ class WindowManager {
                         .onClick {
                             scope.launch {
                                 if (!isOnTop)
-                                    bringToFront(it.key)
+                                    bringToFront(it.key, true)
                             }
                         }
                 )
@@ -159,7 +250,7 @@ class WindowManager {
 }
 
 @Composable
-fun shakerAnimation(isShaking: Boolean): State<Float> {
+private fun shakerAnimation(isShaking: Boolean): State<Float> {
     if (!isShaking) return derivedStateOf { 0f }
 
     val infiniteTransition = rememberInfiniteTransition()

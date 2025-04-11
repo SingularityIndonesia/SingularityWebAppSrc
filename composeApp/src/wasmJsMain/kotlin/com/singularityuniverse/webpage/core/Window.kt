@@ -11,6 +11,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
 import kotlinx.coroutines.launch
 
 class Window(
@@ -25,6 +28,9 @@ class Window(
     // using defaultMinSize as expected size because the size it requested
     // might not be able tobe provided by the WindowManager
     val expectedSize = app.defaultMinSize
+    // updated on size changed
+    val currentSize = mutableStateOf(IntSize.Zero)
+    val center = currentSize.value.let { IntOffset(it.width, it.height) }.div(2f)
 
     @OptIn(ExperimentalFoundationApi::class)
     @Composable
@@ -32,7 +38,8 @@ class Window(
         val scope = rememberCoroutineScope()
 
         Scaffold(
-            modifier = modifier,
+            modifier = modifier
+                .onSizeChanged { currentSize.value = it },
             topBar = {
                 TopBar(
                     modifier = Modifier.Companion
