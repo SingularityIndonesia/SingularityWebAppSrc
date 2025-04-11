@@ -109,7 +109,9 @@ class WindowManager {
                     // ignore if subordinate occupation not overlapping currentWindowOccupation
                     if (!subordinateOccupation.any { it in currentWindowOccupation }) return@run null
 
-                    (subOrdinateCenter - currentWindowCenter).let { it / it.absoluteValue }
+                    (subOrdinateCenter - currentWindowCenter)
+                        .takeIf { it != 0 }
+                        ?.let { it / it.absoluteValue } ?: 0
                 } ?: return@forEach // ignore if not overlapping
 
                 val overlapMagnitude = when (overlapDirection) {
