@@ -124,7 +124,7 @@ class WindowManager {
                         currentWindowEnd - subOrdinateStart + ((screenDensity?.absoluteValue
                             ?: 1f) * 16)// extra 16 dp
                     }
-                }.toInt()
+                }.fastRoundToInt()
 
                 val targetPos = IntOffset(overlapMagnitude, 0)
 
@@ -160,7 +160,7 @@ class WindowManager {
 
     suspend fun move(window: Window, by: Offset) {
         val currentPos = windowPosition[window] ?: return
-        val newPos = currentPos + by.let { IntOffset(x = it.x.toInt(), y = it.y.toInt()) }
+        val newPos = currentPos + by.let { IntOffset(x = it.x.fastRoundToInt(), y = it.y.fastRoundToInt()) }
         windowPosition[window] = newPos
 
         // bring to front if not on top
@@ -172,7 +172,7 @@ class WindowManager {
 
     suspend fun animateMove(window: Window, by: IntOffset, durationMillis: Int = 150) {
         val frameDuration = 1000L / 60L // = 60 fps
-        val steps = (durationMillis / frameDuration).toInt()
+        val steps = durationMillis / frameDuration
 
         val start = windowPosition[window] ?: return
         val end = start + by
@@ -180,8 +180,8 @@ class WindowManager {
         for (i in 1..steps) {
             val t = i / steps.toFloat()
             val interpolated = IntOffset(
-                x = (start.x + by.x * t).toInt(),
-                y = (start.y + by.y * t).toInt()
+                x = (start.x + by.x * t).fastRoundToInt(),
+                y = (start.y + by.y * t).fastRoundToInt()
             )
             windowPosition[window] = interpolated
             delay(frameDuration)
