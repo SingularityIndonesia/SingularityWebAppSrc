@@ -18,7 +18,7 @@ import org.jetbrains.compose.resources.painterResource
 import singularityuniverse.composeapp.generated.resources.Res
 import singularityuniverse.composeapp.generated.resources.logo_of_singularity_indonesia
 
-class AboutApp : Application(){
+class About : Application(){
     override val title: String = "About"
     override val defaultMinSize: DpSize = DpSize(300.dp, 400.dp)
 

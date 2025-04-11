@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.singularityuniverse.webpage.core.Application
 
-class CalculatorApp: Application() {
+class Calculator: Application() {
     override val title: String = "Calculator"
     override val defaultMinSize: DpSize = DpSize(400.dp, 400.dp)
     private val log = mutableStateOf("")
@@ -38,7 +38,7 @@ class CalculatorApp: Application() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
-                log = this@CalculatorApp.log.value
+                log = this@Calculator.log.value
             )
 
             InputPane(

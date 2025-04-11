@@ -1,12 +1,16 @@
 package com.singularityuniverse.webpage
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
-import com.singularityuniverse.webpage.desktopv2.Desktop
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import com.singularityuniverse.webpage.application.Desktop
 
 @Composable
 fun App() {
+    val desktop = remember { Desktop() }
     MaterialTheme {
-        Desktop()
+        desktop.Draw(modifier = Modifier.fillMaxSize())
     }
 }
