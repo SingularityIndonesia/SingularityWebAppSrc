@@ -37,13 +37,13 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.singularityuniverse.webpage.core.Application
 import com.singularityuniverse.webpage.core.Window
-import com.singularityuniverse.webpage.core.WindowManager
+import com.singularityuniverse.webpage.core.WindowManagerImpl
 import kotlinx.coroutines.launch
 
 class Desktop : Application() {
     override val title: String = "Desktop"
     override val defaultMinSize: DpSize = DpSize.Unspecified
-    private val windowManager = WindowManager()
+    private val windowManager = WindowManagerImpl()
     private val applications = mutableStateListOf<Application>(Calculator(), About(), Calculator())
     private val windows = mutableStateListOf<Window>()
 
