@@ -18,23 +18,18 @@
  */
 package com.singularityuniverse.webpage.core
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.onClick
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -67,7 +62,7 @@ class WindowManagerImpl : WindowManager, WindowCoordinator by WindowCoordinatorI
             return true
         }
 
-        // wait till playground ready
+        // wait till playground drawing ready
         if (playGroundSize.value == IntSize.Companion.Zero || screenDensity.value == 0f) {
             delay(300)
             return open(window)
@@ -118,40 +113,56 @@ class WindowManagerImpl : WindowManager, WindowCoordinator by WindowCoordinatorI
             // fixme: refactor to `coordinator.windowCoordinate.forEach`
             windowPosition.forEach {
                 val window = it.key
-                // fixme: make facade in coordinator
-                val zIndex = windowOrder.indexOf(it.key).toFloat()
-                val position = it.value
-                val requestedSize = it.key.expectedSize
-                // fixme: make facade in coordinator
-                val isOnTop = windowOrder.last() == it.key
+                key(window) {
+                    // fixme: make facade in coordinator
+                    val zIndex = windowOrder.indexOf(it.key).toFloat()
+                    val position = it.value
+                    val requestedSize = it.key.expectedSize
+                    // fixme: make facade in coordinator
+                    val isOnTop = windowOrder.last() == it.key
 
-                // shaker
-                // fixme: feels wrong
-                val shakerAnimation = shakerAnimator(window)
+                    // shaker
+                    val shakerAnimation = shakerAnimator(window)
 
-                window.Draw(
-                    modifier = Modifier.Companion
-                        .size(requestedSize)
-                        .offset { position }
-                        .onGloballyPositioned {
-                            val yOffset = it.positionInParent().y.takeIf { it < 0 } ?: return@onGloballyPositioned
-                            scope.launch {
-                                move(window, Offset(x = 0f, y = yOffset.absoluteValue))
+                    // region pop up animator
+                    var isOpened by remember { mutableStateOf(false) }
+                    val popUpAnimator = animateFloatAsState(
+                        if (isOpened) 1f else 0f, tween(150, 0, LinearEasing)
+                    )
+
+                    LaunchedEffect(isOpened) {
+                        if (isOpened) return@LaunchedEffect
+                        isOpened = true
+                    }
+                    // endregion
+
+                    window.Draw(
+                        modifier = Modifier.Companion
+                            .size(requestedSize)
+                            .offset { position }
+                            .onGloballyPositioned {
+                                val yOffset = it.positionInParent().y.takeIf { it < 0 }
+                                    ?: return@onGloballyPositioned
+
+                                scope.launch {
+                                    move(window, Offset(x = 0f, y = yOffset.absoluteValue))
+                                }
                             }
-                        }
-                        .zIndex(zIndex)
-                        .rotate(shakerAnimation.value)
-                        .shadow(
-                            if (isOnTop) 4.dp else 1.dp,
-                            RoundedCornerShape(16.dp)
-                        )
-                        .onClick {
-                            scope.launch {
-                                if (!isOnTop)
-                                    bringToFront(it.key, true)
+                            .zIndex(zIndex)
+                            .rotate(shakerAnimation.value)
+                            .scale(popUpAnimator.value)
+                            .shadow(
+                                if (isOnTop) 4.dp else 1.dp,
+                                RoundedCornerShape(16.dp)
+                            )
+                            .onClick {
+                                scope.launch {
+                                    if (!isOnTop)
+                                        bringToFront(it.key, true)
+                                }
                             }
-                        }
-                )
+                    )
+                }
             }
         }
     }
