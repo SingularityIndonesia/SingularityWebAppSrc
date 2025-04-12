@@ -63,7 +63,8 @@ class Window(
                     modifier = Modifier.Companion
                         .onDrag {
                             scope.launch {
-                                wm.move(this@Window, it)
+                                // fixme: make window manager inherit coordinator
+                                wm.coordinator.move(this@Window, it)
                             }
                         },
                     title = title.value,

@@ -63,7 +63,8 @@ class Desktop : Application() {
 
     @Composable
     override fun Draw(modifier: Modifier) {
-        val topApplication = windowManager.windowOrder.lastOrNull()?.app
+        // fixme: make facade
+        val topApplication = windowManager.coordinator.windowOrder.lastOrNull()?.app
         val scope = rememberCoroutineScope()
 
         LaunchedEffect(Unit) {
