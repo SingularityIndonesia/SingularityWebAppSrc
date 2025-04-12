@@ -135,7 +135,9 @@ class Calculator : Application() {
     }
 
     private fun calculate(string: String): String {
-        return "Hello World"
+        return if (string == "Hello World") {
+            "I'm pretty funny huh"
+        } else "Hello World"
     }
 }
 
