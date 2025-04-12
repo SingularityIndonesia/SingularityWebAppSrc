@@ -18,12 +18,12 @@
  */
 package com.singularityuniverse.webpage.core
 
-import androidx.compose.animation.core.*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.onClick
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
@@ -41,41 +41,39 @@ import androidx.compose.ui.zIndex
 import kotlinx.coroutines.*
 import kotlin.math.absoluteValue
 
-class WindowManager {
-    var playGroundSize: IntSize? = null
-    var screenDensity: Float? = null
-    val windows = mutableStateListOf<Window>()
-    val coordinator = WindowCoordinator(this)
+class WindowManager : WindowCoordinator by WindowCoordinatorImpl() {
+    private val windows: SnapshotStateList<Window> = mutableStateListOf<Window>()
+    private val playGroundSize: MutableState<IntSize> = mutableStateOf(IntSize.Zero)
+    private val screenDensity: MutableState<Float> = mutableStateOf(0f)
 
     suspend fun open(window: Window): Boolean {
-        if (coordinator.bringToFront(window, true)) {
+        if (bringToFront(window, true)) {
             return true
         }
 
         // wait till playground ready
-        if (playGroundSize == null || screenDensity == null) {
+        if (playGroundSize.value == IntSize.Zero || screenDensity.value == 0f) {
             delay(300)
             return open(window)
         }
 
-        val center = playGroundSize!!.center.minus(
+        val center = playGroundSize.value.center.minus(
             window.expectedSize.let {
                 IntOffset(
-                    x = (it.width.value * (screenDensity ?: 1f) / 2).fastRoundToInt(),
-                    y = (it.height.value * (screenDensity ?: 1f) / 2).fastRoundToInt(),
+                    x = (it.width.value * screenDensity.value.absoluteValue / 2).fastRoundToInt(),
+                    y = (it.height.value * screenDensity.value.absoluteValue / 2).fastRoundToInt(),
                 )
             }
         )
         // fixme: move control to coordinator
-        coordinator.windowPosition[window] = center
-        coordinator.windowOrder.add(window)
+        windowPosition[window] = center
+        windowOrder.add(window)
         return true
     }
 
     fun close(window: Window): Boolean {
-        // fixme: move complexcity to coordinator
-        coordinator.windowOrder.remove(window)
-        coordinator.windowPosition.remove(window)
+        windowOrder.remove(window)
+        windowPosition.remove(window)
         return true
     }
 
@@ -95,7 +93,7 @@ class WindowManager {
         val density = LocalDensity.current
 
         LaunchedEffect(density.density) {
-            screenDensity = density.density
+            screenDensity.value = density.density
         }
 
         Box(
@@ -103,23 +101,23 @@ class WindowManager {
                 .padding(safeContentPadding)
                 .onSizeChanged {
                     if (it.height <= 0) return@onSizeChanged
-                    playGroundSize = it
+                    playGroundSize.value = it
                 }
                 .then(modifier)
         ) {
             // fixme: refactor to `coordinator.windowCoordinate.forEach`
-            coordinator.windowPosition.forEach {
+            windowPosition.forEach {
                 val window = it.key
                 // fixme: make facade in coordinator
-                val zIndex = coordinator.windowOrder.indexOf(it.key).toFloat()
+                val zIndex = windowOrder.indexOf(it.key).toFloat()
                 val position = it.value
                 val requestedSize = it.key.expectedSize
                 // fixme: make facade in coordinator
-                val isOnTop = coordinator.windowOrder.last() == it.key
+                val isOnTop = windowOrder.last() == it.key
 
                 // shaker
                 // fixme: feels wrong
-                val shakerAnimation = coordinator.shakerAnimator(window)
+                val shakerAnimation = shakerAnimator(window)
 
                 window.Draw(
                     modifier = Modifier.Companion
@@ -128,7 +126,7 @@ class WindowManager {
                         .onGloballyPositioned {
                             val yOffset = it.positionInParent().y.takeIf { it < 0 } ?: return@onGloballyPositioned
                             scope.launch {
-                                coordinator.move(window, Offset(x = 0f, y = yOffset.absoluteValue))
+                                move(window, Offset(x = 0f, y = yOffset.absoluteValue))
                             }
                         }
                         .zIndex(zIndex)
@@ -140,7 +138,7 @@ class WindowManager {
                         .onClick {
                             scope.launch {
                                 if (!isOnTop)
-                                    coordinator.bringToFront(it.key, true)
+                                    bringToFront(it.key, true)
                             }
                         }
                 )

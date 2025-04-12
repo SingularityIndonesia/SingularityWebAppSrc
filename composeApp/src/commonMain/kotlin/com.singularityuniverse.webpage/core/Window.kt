@@ -52,7 +52,7 @@ class Window(
 
     @OptIn(ExperimentalFoundationApi::class)
     @Composable
-    fun Draw(modifier: Modifier = Modifier.Companion) {
+    fun Draw(modifier: Modifier = Modifier) {
         val scope = rememberCoroutineScope()
 
         Scaffold(
@@ -60,11 +60,11 @@ class Window(
                 .onSizeChanged { currentSize.value = it },
             topBar = {
                 TopBar(
-                    modifier = Modifier.Companion
+                    modifier = Modifier
                         .onDrag {
                             scope.launch {
                                 // fixme: make window manager inherit coordinator
-                                wm.coordinator.move(this@Window, it)
+                                wm.move(this@Window, it)
                             }
                         },
                     title = title.value,
