@@ -28,6 +28,7 @@ import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -69,12 +70,7 @@ class About : Application() {
                 text = "v0.0.0-proto",
                 style = MaterialTheme.typography.overline
             )
-            Spacer(Modifier.height(8.dp))
-            Button(
-                colors = ButtonDefaults.buttonColors(
-                    backgroundColor = MaterialTheme.colors.secondary,
-                    contentColor = MaterialTheme.colors.onSecondary
-                ),
+            TextButton(
                 onClick = {
                     kotlinx.browser.window.open("https://github.com/SingularityIndonesia/SingularityWebAppSrc")
                 }
