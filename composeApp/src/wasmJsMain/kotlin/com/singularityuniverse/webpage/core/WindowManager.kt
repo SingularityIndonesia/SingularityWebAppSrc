@@ -53,8 +53,8 @@ class WindowManager {
         val center = playGroundSize!!.center.minus(
             window.expectedSize.let {
                 IntOffset(
-                    x = (it.width.value * (screenDensity ?: 1f) / 2).toInt(),
-                    y = (it.height.value * (screenDensity ?: 1f) / 2).toInt(),
+                    x = (it.width.value * (screenDensity ?: 1f) / 2).fastRoundToInt(),
+                    y = (it.height.value * (screenDensity ?: 1f) / 2).fastRoundToInt(),
                 )
             }
         )
