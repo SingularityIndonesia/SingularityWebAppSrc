@@ -44,7 +44,7 @@ class Desktop : Application() {
     override val title: String = "Desktop"
     override val defaultMinSize: DpSize = DpSize.Unspecified
     private val windowManager = WindowManagerImpl()
-    private val applications = mutableStateListOf<Application>(Calculator(), About(), Magician())
+    private val applications = mutableStateListOf<Application>(Calculator(), About(), GameOfLife(), Magician())
     private val windows = mutableStateListOf<Window>()
 
     suspend fun openApp(application: Application) {
