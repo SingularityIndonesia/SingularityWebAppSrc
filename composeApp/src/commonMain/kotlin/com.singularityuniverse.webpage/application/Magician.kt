@@ -1,14 +1,8 @@
 package com.singularityuniverse.webpage.application
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.requiredHeight
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -23,12 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.singularityuniverse.webpage.core.Application
 import kotlinx.browser.window
 import org.jetbrains.compose.resources.painterResource
-import singularityuniverse.composeapp.generated.resources.Res
-import singularityuniverse.composeapp.generated.resources.ic_github
-import singularityuniverse.composeapp.generated.resources.ic_gmail
-import singularityuniverse.composeapp.generated.resources.ic_linkedin
-import singularityuniverse.composeapp.generated.resources.ic_whatsapp
-import singularityuniverse.composeapp.generated.resources.magician_profile_pict
+import singularityuniverse.composeapp.generated.resources.*
 
 class Magician : Application() {
     override val title: String = "Magician Profile"
@@ -74,7 +63,7 @@ class Magician : Application() {
             ){
                 IconButton(
                     onClick = {
-
+                        window.open("mailto:stefanus.ayudha@gmail.com")
                     }
                 ) {
                     Image(
@@ -86,7 +75,7 @@ class Magician : Application() {
                 }
                 IconButton(
                     onClick = {
-
+                        window.open("https://github.com/stefanusayudha")
                     }
                 ) {
                     Image(
@@ -98,7 +87,7 @@ class Magician : Application() {
                 }
                 IconButton(
                     onClick = {
-
+                        window.open("https://www.linkedin.com/in/stefanus-ayudha-447a98b5/")
                     }
                 ) {
                     Image(
