@@ -62,13 +62,11 @@ class GameOfLife : Application() {
 
             val neighborCount = listOf(
                 // sum of top neighbor
-                ((x - 1) * matrixSize + y).let { it - 1..it + 1 }
-                    .fold(0) { acc, i -> acc + (list.getOrNull(i) ?: 0) },
+                ((x - 1) * matrixSize + y).let { it - 1..it + 1 }.sumOf { list.getOrNull(it) ?: 0 },
                 // sum of side neighbor
-                (i - 1..i + 1).fold(0) { acc, i -> acc + (list.getOrNull(i) ?: 0) } - state,
+                (i - 1..i + 1).sumOf { list.getOrNull(it) ?: 0 } - state,
                 // sum of bellow neighbor
-                ((x + 1) * matrixSize + y).let { it - 1..it + 1 }
-                    .fold(0) { acc, i -> acc + (list.getOrNull(i) ?: 0) },
+                ((x + 1) * matrixSize + y).let { it - 1..it + 1 }.sumOf { list.getOrNull(it) ?: 0 },
             ).sum()
 
             // next state
