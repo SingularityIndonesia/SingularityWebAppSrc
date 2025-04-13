@@ -59,7 +59,7 @@ class Magician : Application() {
                     style = MaterialTheme.typography.h5
                 )
                 Text(
-                    text = "Kotlin Developer Expert",
+                    text = "Expert Kotlin Developer",
                     style = MaterialTheme.typography.body2
                 )
 
