@@ -1,7 +1,10 @@
 package com.singularityuniverse.webpage.application
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.onClick
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -14,10 +17,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.singularityuniverse.webpage.core.Application
 import kotlinx.browser.window
 import org.jetbrains.compose.resources.painterResource
-import singularityuniverse.composeapp.generated.resources.*
+import singularityuniverse.composeapp.generated.resources.Res
+import singularityuniverse.composeapp.generated.resources.ic_github_24
+import singularityuniverse.composeapp.generated.resources.ic_gmail_24
+import singularityuniverse.composeapp.generated.resources.ic_kaito_60
+import singularityuniverse.composeapp.generated.resources.ic_linkedin_24
+import singularityuniverse.composeapp.generated.resources.ic_whatsapp_24
+import singularityuniverse.composeapp.generated.resources.magician_profile_pict
 
 class Magician : Application() {
     override val title: String = "Magician Profile"
@@ -70,9 +80,9 @@ class Magician : Application() {
                         }
                     ) {
                         Image(
-                            modifier = Modifier.requiredHeight(20.dp),
+                            modifier = Modifier.requiredHeight(22.dp),
                             contentScale = ContentScale.FillHeight,
-                            painter = painterResource(Res.drawable.ic_gmail),
+                            painter = painterResource(Res.drawable.ic_gmail_24),
                             contentDescription = null
                         )
                     }
@@ -84,7 +94,7 @@ class Magician : Application() {
                         Image(
                             modifier = Modifier.requiredHeight(24.dp),
                             contentScale = ContentScale.FillHeight,
-                            painter = painterResource(Res.drawable.ic_github),
+                            painter = painterResource(Res.drawable.ic_github_24),
                             contentDescription = null
                         )
                     }
@@ -96,7 +106,7 @@ class Magician : Application() {
                         Image(
                             modifier = Modifier.requiredHeight(24.dp),
                             contentScale = ContentScale.FillHeight,
-                            painter = painterResource(Res.drawable.ic_linkedin),
+                            painter = painterResource(Res.drawable.ic_linkedin_24),
                             contentDescription = null
                         )
                     }
@@ -106,15 +116,33 @@ class Magician : Application() {
                         }
                     ) {
                         Image(
-                            modifier = Modifier.requiredHeight(28.dp),
+                            modifier = Modifier.requiredHeight(25.dp),
                             contentScale = ContentScale.FillHeight,
-                            painter = painterResource(Res.drawable.ic_whatsapp),
+                            painter = painterResource(Res.drawable.ic_whatsapp_24),
                             contentDescription = null
                         )
                     }
                 }
                 Spacer(modifier = Modifier.height(24.dp))
             }
+        }
+    }
+
+    @OptIn(ExperimentalFoundationApi::class)
+    @Composable
+    override fun Icon(modifier: Modifier, onClick: () -> Unit) {
+        Box(
+            modifier = modifier
+                .clip(RoundedCornerShape(8.dp))
+                .background(MaterialTheme.colors.background)
+                .onClick { onClick.invoke() },
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                modifier = Modifier.padding(8.dp),
+                painter = painterResource(Res.drawable.ic_kaito_60),
+                contentDescription = null
+            )
         }
     }
 }
