@@ -162,15 +162,15 @@ class WindowManagerImpl : WindowManager, WindowCoordinator by WindowCoordinatorI
     }
 
     fun getCenterInitialPosition(window: Window, safeContentPadding: PaddingValues): IntOffset {
-        val statusBarPadding = safeContentPadding.calculateTopPadding().value
-        val bottomBarPadding = safeContentPadding.calculateBottomPadding().value
         val screenDensity = this.screenDensity.value.absoluteValue
+        val statusBarPadding = safeContentPadding.calculateTopPadding().value * screenDensity
+        val bottomBarPadding = safeContentPadding.calculateBottomPadding().value * screenDensity
 
         val safePlaygroundSize = playGroundSize.value
             .let {
                 IntSize(
                     width = it.width,
-                    height = (it.height - (statusBarPadding + bottomBarPadding) * screenDensity).toInt()
+                    height = (it.height - (statusBarPadding + bottomBarPadding)).toInt()
                 )
             }
 
@@ -178,7 +178,7 @@ class WindowManagerImpl : WindowManager, WindowCoordinator by WindowCoordinatorI
             window.expectedSize.let {
                 IntOffset(
                     x = (it.width.value * screenDensity / 2).fastRoundToInt(),
-                    y = (it.height.value * screenDensity / 2).fastRoundToInt(),
+                    y = ((it.height.value * screenDensity / 2) + statusBarPadding).fastRoundToInt(),
                 )
             }
         )
