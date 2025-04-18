@@ -68,16 +68,8 @@ class WindowManagerImpl : WindowManager, WindowCoordinator by WindowCoordinatorI
             return open(window)
         }
 
-        val center = playGroundSize.value.center.minus(
-            window.expectedSize.let {
-                IntOffset(
-                    x = (it.width.value * screenDensity.value.absoluteValue / 2).fastRoundToInt(),
-                    y = (it.height.value * screenDensity.value.absoluteValue / 2).fastRoundToInt(),
-                )
-            }
-        )
-        // fixme: move control to coordinator
-        windowPosition[window] = center
+        // coordinate buffer
+        windowPosition[window] = null
         windowOrder.add(window)
         return true
     }
@@ -102,8 +94,7 @@ class WindowManagerImpl : WindowManager, WindowCoordinator by WindowCoordinatorI
         }
 
         Box(
-            modifier = Modifier.Companion
-                .padding(safeContentPadding)
+            modifier = Modifier
                 .onSizeChanged {
                     if (it.height <= 0) return@onSizeChanged
                     playGroundSize.value = it
@@ -116,7 +107,10 @@ class WindowManagerImpl : WindowManager, WindowCoordinator by WindowCoordinatorI
                 key(window) {
                     // fixme: make facade in coordinator
                     val zIndex = windowOrder.indexOf(it.key).toFloat()
-                    val position = it.value
+                    val position = it.value ?: getCenterInitialPosition(window, safeContentPadding)
+                        // if position is null -> calculate center -> re-initiate position
+                        .also { windowPosition[window] = it }
+
                     val requestedSize = it.key.expectedSize
                     // fixme: make facade in coordinator
                     val isOnTop = windowOrder.last() == it.key
@@ -165,5 +159,30 @@ class WindowManagerImpl : WindowManager, WindowCoordinator by WindowCoordinatorI
                 }
             }
         }
+    }
+
+    fun getCenterInitialPosition(window: Window, safeContentPadding: PaddingValues): IntOffset {
+        val statusBarPadding = safeContentPadding.calculateTopPadding().value
+        val bottomBarPadding = safeContentPadding.calculateBottomPadding().value
+        val screenDensity = this.screenDensity.value.absoluteValue
+
+        val safePlaygroundSize = playGroundSize.value
+            .let {
+                IntSize(
+                    width = it.width,
+                    height = (it.height - (statusBarPadding + bottomBarPadding) * screenDensity).toInt()
+                )
+            }
+
+        val offset = safePlaygroundSize.center.minus(
+            window.expectedSize.let {
+                IntOffset(
+                    x = (it.width.value * screenDensity / 2).fastRoundToInt(),
+                    y = (it.height.value * screenDensity / 2).fastRoundToInt(),
+                )
+            }
+        )
+
+        return offset
     }
 }

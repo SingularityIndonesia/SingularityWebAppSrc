@@ -26,7 +26,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.IntOffset
 
 interface WindowCoordinator {
-    val windowPosition: SnapshotStateMap<Window, IntOffset>
+    val windowPosition: SnapshotStateMap<Window, IntOffset?>
     val windowOrder: SnapshotStateList<Window>
     val shaker: SnapshotStateList<Window>
 

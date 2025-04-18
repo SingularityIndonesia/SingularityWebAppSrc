@@ -104,7 +104,7 @@ class Desktop : Application() {
             windowManager.Draw(
                 modifier = Modifier
                     .fillMaxSize(),
-                safeContentPadding = PaddingValues(0.dp)
+                safeContentPadding = it
             )
         }
     }

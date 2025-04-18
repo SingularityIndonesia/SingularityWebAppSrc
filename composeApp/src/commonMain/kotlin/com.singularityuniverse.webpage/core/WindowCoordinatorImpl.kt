@@ -30,7 +30,7 @@ import kotlinx.coroutines.delay
 import kotlin.math.absoluteValue
 
 class WindowCoordinatorImpl : WindowCoordinator {
-    override val windowPosition = mutableStateMapOf<Window, IntOffset>()
+    override val windowPosition = mutableStateMapOf<Window, IntOffset?>()
     override val windowOrder = mutableStateListOf<Window>()
     override val shaker = mutableStateListOf<Window>()
 
