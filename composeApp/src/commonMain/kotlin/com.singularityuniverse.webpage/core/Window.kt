@@ -30,6 +30,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import kotlinx.coroutines.launch
@@ -46,6 +47,7 @@ class Window(
     // using defaultMinSize as expected size because the size it requested
     // might not be able tobe provided by the WindowManager
     val expectedSize = app.defaultMinSize
+
     // updated on size changed
     val currentSize = mutableStateOf(IntSize.Zero)
     val center = currentSize.value.let { IntOffset(it.width, it.height) }.div(2f)
@@ -101,7 +103,11 @@ private fun TopBar(
             }
         },
         title = {
-            Text(title)
+            Text(
+                text = title,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         }
     )
 }
