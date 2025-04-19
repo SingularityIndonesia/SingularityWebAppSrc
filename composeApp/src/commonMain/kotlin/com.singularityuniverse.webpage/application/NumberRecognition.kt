@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.drawText
@@ -53,7 +54,7 @@ class NumberRecognition : Application() {
         density: Density,
         points: List<Offset>,
         size: IntSize,
-        scale: Float = .5f
+        scale: Float = .2f
     ): ImageBitmap {
         // Scale the canvas size
         val scaledWidth = (size.width * scale).toInt()
@@ -124,99 +125,10 @@ class NumberRecognition : Application() {
         }
     }
 
-    private val predictingPoints = mutableStateListOf<Offset>()
-    private var predictionJob: Deferred<Unit>? = null
-    private val predictionResult = mutableStateOf("")
-    private suspend fun calculate() = coroutineScope {
-        predictionResult.value = "Calculating.."
-
-        predictionJob?.cancel()
-
-        predictionJob = async {
-            delay(300)
-            val image = createDrawingBitmap(localDensity, predictingPoints, canvasSize)
-
-            // prepare
-            prepare(image)
-            val nn = this@NumberRecognition.neuralNetwork!!
-
-            val input = imageBitmapToGrayscaleDoubleArray(image)
-            val prediction = nn.predict(input)[0]
-
-            ensureActive()
-            predictionResult.value = "Result = ${prediction.roundToInt()}"
-        }
-    }
-
-    private fun clearPredictionCanvas() {
-        predictionJob?.cancel()
-        predictingPoints.clear()
-        predictionResult.value = ""
-    }
-
-    @Composable
-    private fun Predicting(
-        modifier: Modifier = Modifier
-    ) {
-        val scope = rememberCoroutineScope()
-        Column(
-            modifier = modifier
-                .then(Modifier.padding(8.dp)),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Text("Predicting")
-            TextField(
-                modifier = Modifier.width(300.dp),
-                enabled = false,
-                value = TextFieldValue(predictionResult.value),
-                onValueChange = { new: TextFieldValue ->
-
-                }
-            )
-            Drawing(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(300.dp)
-                    .onSizeChanged {
-                        canvasSize = it
-                    },
-                title = "Draw number to predict",
-                points = predictingPoints,
-                onStart = {
-                    predictionResult.value = "Drawing.."
-                },
-                onDrag = { change, _ ->
-                    predictingPoints.add(change.position)
-                },
-                onDragEnd = {
-                    scope.launch {
-                        calculate()
-                    }
-                }
-            )
-
-            Row(
-                modifier = Modifier.align(Alignment.End),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                OutlinedButton(
-                    onClick = {
-                        clearPredictionCanvas()
-                    }
-                ) {
-                    Text(
-                        modifier = Modifier,
-                        text = "Reset"
-                    )
-                }
-            }
-        }
-    }
-
     private val trainingPoints = mutableStateListOf<Offset>()
     private var trainingJob: Deferred<Unit>? = null
     private val trainingResult = mutableStateOf("")
+    private val trainingPreview = mutableStateOf<ImageBitmap?>(null)
 
     private suspend fun train(target: Double = 0.0) = coroutineScope {
         trainingResult.value = "Training in progress..\nIt might freeze the browser, just wait."
@@ -224,12 +136,14 @@ class NumberRecognition : Application() {
         trainingJob?.cancel()
 
         trainingJob = async {
-            delay(300)
             val image = createDrawingBitmap(localDensity, trainingPoints, canvasSize)
+            trainingPreview.value = image
+
             // prepare
             prepare(image)
             val nn = this@NumberRecognition.neuralNetwork!!
 
+            delay(300)
             val input = imageBitmapToGrayscaleDoubleArray(image)
             val targetVec = doubleArrayOf(target)
             nn.train(input, targetVec)
@@ -239,9 +153,9 @@ class NumberRecognition : Application() {
     }
 
     private fun clearTrainingCanvas() {
+        trainingPreview.value = null
         trainingJob?.cancel()
         trainingPoints.clear()
-        trainingResult.value = ""
     }
 
     @Composable
@@ -285,6 +199,7 @@ class NumberRecognition : Application() {
                 onDragEnd = {
                     scope.launch {
                         train(target.text.toDoubleOrNull() ?: 11.0) // 11 == NaN
+                        clearTrainingCanvas()
                     }
                 }
             )
@@ -300,14 +215,114 @@ class NumberRecognition : Application() {
                     style = MaterialTheme.typography.caption,
                     text = trainingResult.value
                 )
+            }
+        }
+    }
+
+    private val predictingPoints = mutableStateListOf<Offset>()
+    private var predictionJob: Deferred<Unit>? = null
+    private val predictionResult = mutableStateOf("")
+    private val predictionPreview = mutableStateOf<ImageBitmap?>(null)
+    private suspend fun predict() = coroutineScope {
+        predictionResult.value = "Calculating.."
+
+        predictionJob?.cancel()
+
+        predictionJob = async {
+            val image = createDrawingBitmap(localDensity, predictingPoints, canvasSize)
+            predictionPreview.value = image
+
+            // prepare
+            prepare(image)
+            val nn = this@NumberRecognition.neuralNetwork!!
+
+            delay(300)
+            val input = imageBitmapToGrayscaleDoubleArray(image)
+            val prediction = nn.predict(input)[0]
+
+            ensureActive()
+            predictionResult.value = "Result = ${prediction.roundToInt()}"
+        }
+    }
+
+    private fun clearPredictionCanvas() {
+        predictionPreview.value = null
+        predictionJob?.cancel()
+        predictingPoints.clear()
+        predictionResult.value = ""
+    }
+
+    @Composable
+    private fun Predicting(
+        modifier: Modifier = Modifier
+    ) {
+        val scope = rememberCoroutineScope()
+        Column(
+            modifier = modifier
+                .then(Modifier.padding(8.dp)),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text("Predicting")
+            TextField(
+                modifier = Modifier.width(300.dp),
+                enabled = false,
+                value = TextFieldValue(predictionResult.value),
+                onValueChange = { new: TextFieldValue ->
+
+                }
+            )
+            Drawing(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(300.dp)
+                    .onSizeChanged {
+                        canvasSize = it
+                    },
+                title = "Draw number to predict",
+                points = predictingPoints,
+                onStart = {
+                    predictionResult.value = "Drawing.."
+                },
+                onDrag = { change, _ ->
+                    predictingPoints.add(change.position)
+                },
+                onDragEnd = {
+                    scope.launch {
+                        predict()
+                    }
+                }
+            )
+
+            Row(
+                modifier = Modifier.align(Alignment.End),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (trainingPreview.value != null) {
+                    Image(
+                        modifier = Modifier.size(40.dp),
+                        contentScale = ContentScale.Fit,
+                        bitmap = trainingPreview.value!!,
+                        contentDescription = null
+                    )
+                }
+                if (predictionPreview.value != null) {
+                    Image(
+                        modifier = Modifier.size(40.dp),
+                        contentScale = ContentScale.Fit,
+                        bitmap = predictionPreview.value!!,
+                        contentDescription = null
+                    )
+                }
+                Spacer(Modifier.weight(1f))
                 OutlinedButton(
                     onClick = {
-                        clearTrainingCanvas()
+                        clearPredictionCanvas()
                     }
                 ) {
                     Text(
                         modifier = Modifier,
-                        text = "Clear"
+                        text = "Reset"
                     )
                 }
             }
