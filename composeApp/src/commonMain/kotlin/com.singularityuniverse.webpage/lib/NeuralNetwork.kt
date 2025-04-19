@@ -55,6 +55,8 @@ class NeuralNetwork(
     fun predict(inputs: Vector): Vector {
         println("With Magnitude: ${weightsHiddenOutput.joinToString(",") { it.joinToString(",") }}")
         val hidden = dot(weightsInputHidden, inputs).map(::sigmoid).toDoubleArray()
-        return dot(weightsHiddenOutput, hidden).map(::sigmoid).toDoubleArray()
+        val result = dot(weightsHiddenOutput, hidden).map(::sigmoid).toDoubleArray()
+        println("Result: ${result.joinToString(",")}")
+        return result
     }
 }
