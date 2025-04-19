@@ -5,9 +5,9 @@ import kotlinx.coroutines.withContext
 
 class NeuralNetwork(
     inputSize: Int,
-    private val outputSize: Int,
-    private val hiddenSize: Int = 3,
-    private val learningRate: Double = 0.1
+    private val outputSize: Int = 1,
+    private val hiddenSize: Int = 5,
+    private val learningRate: Double = 0.001
 ) {
     private var weightsInputHidden = randomMatrix(hiddenSize, inputSize)
     private var weightsHiddenOutput = randomMatrix(outputSize, hiddenSize)

@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.*
 import com.singularityuniverse.webpage.core.Application
 import com.singularityuniverse.webpage.lib.NeuralNetwork
 import kotlinx.coroutines.*
+import kotlin.math.roundToInt
 
 class NumberRecognition : Application() {
     override val title: String = "Number Recognition Neural Network"
@@ -44,7 +45,6 @@ class NumberRecognition : Application() {
             println("Preparing NN of $inputSize units input")
             neuralNetwork = NeuralNetwork(
                 inputSize = inputSize,
-                outputSize = 11, // 0,1,2,3,4,5,6,7,8,9,0,NaN
             )
         }
     }
@@ -141,17 +141,10 @@ class NumberRecognition : Application() {
             val nn = this@NumberRecognition.neuralNetwork!!
 
             val input = imageBitmapToGrayscaleDoubleArray(image)
-            val prediction = nn.predict(input)
+            val prediction = nn.predict(input)[0]
 
             ensureActive()
-            val maxMagnitude = prediction.max()
-            val total = prediction.sum()
-            val confidential = (maxMagnitude / total).toString().split(".")
-                .let { (it.firstOrNull() ?: "0") + "." + it[1].substring(0, 2) }
-
-            val maxIndex = prediction.indexOfFirst { it == maxMagnitude }
-                .takeIf { it < 10 }?.toString() ?: "NaN"
-            predictionResult.value = "Result = $maxIndex ($confidential%)"
+            predictionResult.value = "Result = ${prediction.roundToInt()}"
         }
     }
 
@@ -225,8 +218,8 @@ class NumberRecognition : Application() {
     private var trainingJob: Deferred<Unit>? = null
     private val trainingResult = mutableStateOf("")
 
-    private suspend fun train(target: Int = 0) = coroutineScope {
-        trainingResult.value = "Training in progress.."
+    private suspend fun train(target: Double = 0.0) = coroutineScope {
+        trainingResult.value = "Training in progress..\nIt might freeze the browser, just wait."
 
         trainingJob?.cancel()
 
@@ -238,7 +231,7 @@ class NumberRecognition : Application() {
             val nn = this@NumberRecognition.neuralNetwork!!
 
             val input = imageBitmapToGrayscaleDoubleArray(image)
-            val targetVec = (0..10).map { if (it == target) 1.0 else 0.0 }.toDoubleArray()
+            val targetVec = doubleArrayOf(target)
             nn.train(input, targetVec)
 
             trainingResult.value = "Finish"
@@ -291,7 +284,7 @@ class NumberRecognition : Application() {
                 },
                 onDragEnd = {
                     scope.launch {
-                        train(target.text.toIntOrNull() ?: 10) // 10 == NaN
+                        train(target.text.toDoubleOrNull() ?: 11.0) // 11 == NaN
                     }
                 }
             )
@@ -304,6 +297,7 @@ class NumberRecognition : Application() {
                 Text(
                     modifier = Modifier.weight(1f),
                     fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.caption,
                     text = trainingResult.value
                 )
                 OutlinedButton(
