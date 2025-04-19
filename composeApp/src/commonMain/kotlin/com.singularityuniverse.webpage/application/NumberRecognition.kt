@@ -129,7 +129,6 @@ class NumberRecognition : Application() {
 
     private val trainingResult = mutableStateOf("")
     private val trainingPreview = mutableStateOf<ImageBitmap?>(null)
-
     private suspend fun train(target: DoubleArray, image: ImageBitmap) {
         trainingResult.value = "Training in progress..\nIt might freeze the browser, just wait."
 
@@ -145,6 +144,7 @@ class NumberRecognition : Application() {
         trainingPreview.value = null
     }
 
+    @OptIn(ExperimentalFoundationApi::class)
     @Composable
     private fun Training(
         modifier: Modifier = Modifier
@@ -256,7 +256,10 @@ class NumberRecognition : Application() {
                     Image(
                         modifier = Modifier
                             .size(30.dp)
-                            .border(BorderStroke(.5.dp, Color.LightGray)),
+                            .border(BorderStroke(.5.dp, Color.LightGray))
+                            .onClick {
+                                trainingBuffer.removeAt(it)
+                            },
                         contentScale = ContentScale.Fit,
                         bitmap = image,
                         contentDescription = null
