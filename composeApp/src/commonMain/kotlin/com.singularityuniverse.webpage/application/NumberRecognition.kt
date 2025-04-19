@@ -3,6 +3,7 @@ package com.singularityuniverse.webpage.application
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
@@ -29,12 +30,10 @@ import androidx.compose.ui.unit.*
 import com.singularityuniverse.webpage.core.Application
 import com.singularityuniverse.webpage.lib.NeuralNetwork
 import kotlinx.coroutines.*
-import kotlin.math.absoluteValue
-import kotlin.math.roundToInt
 
 class NumberRecognition : Application() {
     override val title: String = "Number Recognition Neural Network"
-    override val defaultMinSize: DpSize = DpSize(600.dp, 550.dp)
+    override val defaultMinSize: DpSize = DpSize(600.dp, 590.dp)
 
     private val brushSize = 20f
     private lateinit var localDensity: Density
@@ -128,36 +127,22 @@ class NumberRecognition : Application() {
         }
     }
 
-    private val trainingPoints = mutableStateListOf<Offset>()
-    private var trainingJob: Deferred<Unit>? = null
     private val trainingResult = mutableStateOf("")
     private val trainingPreview = mutableStateOf<ImageBitmap?>(null)
 
-    private suspend fun train(target: DoubleArray) = coroutineScope {
+    private suspend fun train(target: DoubleArray, image: ImageBitmap) {
         trainingResult.value = "Training in progress..\nIt might freeze the browser, just wait."
 
-        trainingJob?.cancel()
+        trainingPreview.value = image
 
-        trainingJob = async {
-            val image = createDrawingBitmap(localDensity, trainingPoints, canvasSize)
-            trainingPreview.value = image
+        // prepare
+        prepare(image)
+        val nn = this@NumberRecognition.neuralNetwork!!
 
-            // prepare
-            prepare(image)
-            val nn = this@NumberRecognition.neuralNetwork!!
-
-            delay(300)
-            val input = imageBitmapToGrayscaleDoubleArray(image)
-            nn.train(input, target)
-
-            trainingResult.value = "Finish"
-        }
-    }
-
-    private fun clearTrainingCanvas() {
+        delay(300)
+        val input = imageBitmapToGrayscaleDoubleArray(image)
+        nn.train(input, target)
         trainingPreview.value = null
-        trainingJob?.cancel()
-        trainingPoints.clear()
     }
 
     @Composable
@@ -166,13 +151,15 @@ class NumberRecognition : Application() {
     ) {
         val scope = rememberCoroutineScope()
         var target by remember { mutableStateOf(TextFieldValue("0")) }
+        val trainingPoints = remember { mutableStateListOf<Offset>() }
+        val trainingBuffer = remember { mutableStateListOf<List<Offset>>() }
 
         Column(
             modifier = modifier
                 .then(Modifier.padding(8.dp)),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text("Training")
+            Text(text = "Training")
             TextField(
                 modifier = Modifier.width(300.dp),
                 value = target,
@@ -183,6 +170,7 @@ class NumberRecognition : Application() {
                     target = new
                 }
             )
+
             Drawing(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -199,31 +187,81 @@ class NumberRecognition : Application() {
                     trainingPoints.add(change.position)
                 },
                 onDragEnd = {
+                    trainingBuffer.add(trainingPoints.toList())
+                    trainingPoints.clear()
+
+                    // wait for 10 picture
+                    if (trainingBuffer.size < 10) {
+                        trainingResult.value = "Draw another"
+                        return@Drawing
+                    }
+                    trainingResult.value = "Training in progress.. Please wait.."
+
                     scope.launch {
                         val target = target.text.toIntOrNull()
+
                         val targetArray = if (target == null) {
                             (0..10).map { if (it == 10) 1.0 else 0.0 }
                         } else {
                             (0..10).map { if (it == target) 1.0 else 0.0 }
                         }.toDoubleArray()
 
-                        train(targetArray)
-                        clearTrainingCanvas()
+                        repeat(trainingBuffer.size) {
+                            val array = trainingBuffer.first()
+                            trainingBuffer.removeAt(0)
+
+                            val image = createDrawingBitmap(localDensity, array, canvasSize)
+                            train(targetArray, image)
+                        }
+
+                        trainingResult.value = "Finish"
                     }
                 }
             )
 
-            Row(
-                modifier = Modifier.align(Alignment.End),
+            LazyRow(
+                modifier = Modifier.wrapContentHeight(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    modifier = Modifier.weight(1f),
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.caption,
-                    text = trainingResult.value
-                )
+                if (trainingPreview.value != null) {
+                    item {
+                        Image(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .border(BorderStroke(.5.dp, Color.LightGray)),
+                            contentScale = ContentScale.Fit,
+                            bitmap = trainingPreview.value!!,
+                            contentDescription = null
+                        )
+                    }
+                }
+                item {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.caption,
+                        text = trainingResult.value
+                    )
+                }
+            }
+
+            LazyRow(
+                modifier = Modifier.wrapContentHeight().align(Alignment.End),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                items(trainingBuffer.size) {
+                    val image = createDrawingBitmap(localDensity, trainingBuffer[it], canvasSize)
+                    Image(
+                        modifier = Modifier
+                            .size(30.dp)
+                            .border(BorderStroke(.5.dp, Color.LightGray)),
+                        contentScale = ContentScale.Fit,
+                        bitmap = image,
+                        contentDescription = null
+                    )
+                }
             }
         }
     }
@@ -274,7 +312,7 @@ class NumberRecognition : Application() {
                 .then(Modifier.padding(8.dp)),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text("Predicting")
+            Text(text = "Predicting")
             TextField(
                 modifier = Modifier.width(300.dp),
                 enabled = false,
@@ -310,17 +348,11 @@ class NumberRecognition : Application() {
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (trainingPreview.value != null) {
-                    Image(
-                        modifier = Modifier.size(40.dp),
-                        contentScale = ContentScale.Fit,
-                        bitmap = trainingPreview.value!!,
-                        contentDescription = null
-                    )
-                }
                 if (predictionPreview.value != null) {
                     Image(
-                        modifier = Modifier.size(40.dp),
+                        modifier = Modifier
+                            .size(40.dp)
+                            .border(BorderStroke(.5.dp, Color.LightGray)),
                         contentScale = ContentScale.Fit,
                         bitmap = predictionPreview.value!!,
                         contentDescription = null
