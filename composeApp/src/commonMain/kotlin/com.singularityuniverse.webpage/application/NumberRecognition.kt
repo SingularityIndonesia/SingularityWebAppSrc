@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.*
 import com.singularityuniverse.webpage.core.Application
 import com.singularityuniverse.webpage.lib.NeuralNetwork
 import kotlinx.coroutines.*
+import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 
 class NumberRecognition : Application() {
@@ -39,6 +40,7 @@ class NumberRecognition : Application() {
     private lateinit var localDensity: Density
     private var canvasSize: IntSize = IntSize.Zero
     private var neuralNetwork: NeuralNetwork? = null
+    private var tokenList = listOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "nan")
 
     private fun prepare(bitmap: ImageBitmap) {
         if (this@NumberRecognition.neuralNetwork == null) {
@@ -46,6 +48,7 @@ class NumberRecognition : Application() {
             println("Preparing NN of $inputSize units input")
             neuralNetwork = NeuralNetwork(
                 inputSize = inputSize,
+                outputSize = tokenList.size
             )
         }
     }
@@ -130,7 +133,7 @@ class NumberRecognition : Application() {
     private val trainingResult = mutableStateOf("")
     private val trainingPreview = mutableStateOf<ImageBitmap?>(null)
 
-    private suspend fun train(target: Double = 0.0) = coroutineScope {
+    private suspend fun train(target: DoubleArray) = coroutineScope {
         trainingResult.value = "Training in progress..\nIt might freeze the browser, just wait."
 
         trainingJob?.cancel()
@@ -145,8 +148,7 @@ class NumberRecognition : Application() {
 
             delay(300)
             val input = imageBitmapToGrayscaleDoubleArray(image)
-            val targetVec = doubleArrayOf(target)
-            nn.train(input, targetVec)
+            nn.train(input, target)
 
             trainingResult.value = "Finish"
         }
@@ -198,7 +200,14 @@ class NumberRecognition : Application() {
                 },
                 onDragEnd = {
                     scope.launch {
-                        train(target.text.toDoubleOrNull() ?: 11.0) // 11 == NaN
+                        val target = target.text.toIntOrNull()
+                        val targetArray = if (target == null) {
+                            (0..10).map { if (it == 10) 1.0 else 0.0 }
+                        } else {
+                            (0..10).map { if (it == target) 1.0 else 0.0 }
+                        }.toDoubleArray()
+
+                        train(targetArray)
                         clearTrainingCanvas()
                     }
                 }
@@ -238,10 +247,13 @@ class NumberRecognition : Application() {
 
             delay(300)
             val input = imageBitmapToGrayscaleDoubleArray(image)
-            val prediction = nn.predict(input)[0]
+            val prediction = nn.predict(input)
+            val predictionMax = prediction.max()
+            val maxIndex = prediction.indexOfFirst { it == predictionMax }
+            val result = tokenList[maxIndex]
 
             ensureActive()
-            predictionResult.value = "Result = ${prediction.roundToInt()}"
+            predictionResult.value = "Result = $result"
         }
     }
 

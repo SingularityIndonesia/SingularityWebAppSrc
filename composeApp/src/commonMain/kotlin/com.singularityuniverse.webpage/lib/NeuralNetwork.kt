@@ -7,7 +7,7 @@ class NeuralNetwork(
     inputSize: Int,
     private val outputSize: Int = 1,
     private val hiddenSize: Int = 11,
-    private val learningRate: Double = 0.001
+    private val learningRate: Double = 0.01
 ) {
     private var weightsInputHidden = randomMatrix(hiddenSize, inputSize)
     private var weightsHiddenOutput = randomMatrix(outputSize, hiddenSize)
