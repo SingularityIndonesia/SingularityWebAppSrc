@@ -18,8 +18,8 @@
  */
 package com.singularityuniverse.webpage.core
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 interface WindowManager : WindowCoordinator {

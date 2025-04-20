@@ -22,21 +22,18 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.singularityuniverse.webpage.core.Application
+import com.singularityuniverse.webpage.core.design.TextIcon
 import kotlin.math.absoluteValue
 
 class GameOfLife : Application() {
@@ -145,20 +142,6 @@ class GameOfLife : Application() {
     @OptIn(ExperimentalFoundationApi::class)
     @Composable
     override fun Icon(modifier: Modifier, onClick: () -> Unit) {
-        Box(
-            modifier = modifier
-                .clip(RoundedCornerShape(8.dp))
-                .background(MaterialTheme.colors.background)
-                .onClick { onClick.invoke() },
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                modifier = Modifier,
-                text = "GoL",
-                style = MaterialTheme.typography.overline,
-                color = MaterialTheme.colors.onBackground,
-                fontSize = 20.sp
-            )
-        }
+        TextIcon(modifier = modifier, text = "G", onClick = onClick)
     }
 }

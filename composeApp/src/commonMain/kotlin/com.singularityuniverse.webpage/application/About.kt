@@ -22,22 +22,18 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.onClick
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.singularityuniverse.webpage.core.Application
+import com.singularityuniverse.webpage.core.design.Overline
+import com.singularityuniverse.webpage.core.design.TextIcon
 import org.jetbrains.compose.resources.painterResource
 import singularityuniverse.composeapp.generated.resources.Res
 import singularityuniverse.composeapp.generated.resources.logo_of_singularity_indonesia
@@ -66,10 +62,7 @@ class About : Application() {
                 text = "Singularity Universe",
                 style = MaterialTheme.typography.h6
             )
-            Text(
-                text = "v0.0.0-proto",
-                style = MaterialTheme.typography.overline
-            )
+            Overline("v0.0.0-proto")
             Spacer(Modifier.height(62.dp))
             Text(
                 modifier = Modifier.padding(horizontal = 8.dp),
@@ -93,20 +86,6 @@ class About : Application() {
     @OptIn(ExperimentalFoundationApi::class)
     @Composable
     override fun Icon(modifier: Modifier, onClick: () -> Unit) {
-        Box(
-            modifier = modifier
-                .clip(RoundedCornerShape(8.dp))
-                .background(MaterialTheme.colors.surface)
-                .onClick { onClick.invoke() },
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                modifier = Modifier,
-                text = "A",
-                style = MaterialTheme.typography.overline,
-                color = MaterialTheme.colors.onSurface,
-                fontSize = 32.sp
-            )
-        }
+        TextIcon(modifier = modifier, text = "A", onClick = onClick)
     }
 }

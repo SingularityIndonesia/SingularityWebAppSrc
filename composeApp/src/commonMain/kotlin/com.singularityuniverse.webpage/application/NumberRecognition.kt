@@ -4,7 +4,6 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
@@ -13,7 +12,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.clipRect
@@ -27,8 +25,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.*
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.dp
 import com.singularityuniverse.webpage.core.Application
+import com.singularityuniverse.webpage.core.design.TextIcon
 import com.singularityuniverse.webpage.lib.NeuralNetwork
 import kotlinx.coroutines.*
 
@@ -431,20 +433,6 @@ class NumberRecognition : Application() {
     @OptIn(ExperimentalFoundationApi::class)
     @Composable
     override fun Icon(modifier: Modifier, onClick: () -> Unit) {
-        Box(
-            modifier = modifier
-                .clip(RoundedCornerShape(8.dp))
-                .background(MaterialTheme.colors.secondary)
-                .onClick { onClick.invoke() },
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                modifier = Modifier,
-                text = "N",
-                style = MaterialTheme.typography.overline,
-                color = MaterialTheme.colors.onSecondary,
-                fontSize = 32.sp
-            )
-        }
+        TextIcon(modifier = modifier, text = "N", onClick = onClick)
     }
 }
