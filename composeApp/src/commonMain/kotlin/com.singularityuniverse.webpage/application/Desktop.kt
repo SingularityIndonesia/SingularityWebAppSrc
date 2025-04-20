@@ -24,10 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,6 +36,9 @@ import com.singularityuniverse.webpage.core.Application
 import com.singularityuniverse.webpage.core.Window
 import com.singularityuniverse.webpage.core.WindowManagerImpl
 import com.singularityuniverse.webpage.core.design.spaced8
+import com.singularityuniverse.webpage.lib.`timeInMMMM_dd_HH:mm`
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class Desktop : Application() {
@@ -118,6 +118,18 @@ private fun StatusBar(
     modifier: Modifier,
     context: String
 ) {
+    val scope = rememberCoroutineScope()
+    val clock = remember { mutableStateOf("00:00") }
+
+    DisposableEffect(Unit) {
+        val job = scope.launch {
+            while (this.isActive) {
+                clock.value = `timeInMMMM_dd_HH:mm`
+                delay(1000)
+            }
+        }
+        onDispose { job.cancel() }
+    }
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -128,6 +140,12 @@ private fun StatusBar(
         Text(
             text = context,
             style = MaterialTheme.typography.body2,
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(Modifier.weight(1f))
+        Text(
+            text = clock.value,
+            style = MaterialTheme.typography.caption,
             fontWeight = FontWeight.Bold
         )
     }

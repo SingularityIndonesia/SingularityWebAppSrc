@@ -69,7 +69,7 @@ class About : Application() {
             Text(
                 modifier = Modifier.padding(horizontal = 8.dp),
                 text = "100% Kotlin 100% Jetpack Compose 100% Awesome",
-                style = MaterialTheme.typography.caption,
+                style = MaterialTheme.typography.overline,
                 textAlign = TextAlign.Center
             )
             TextButton(
