@@ -18,7 +18,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.singularityuniverse.webpage.core.Application
-import kotlinx.browser.window
+import com.singularityuniverse.webpage.lib.open
 import org.jetbrains.compose.resources.painterResource
 import singularityuniverse.composeapp.generated.resources.*
 
@@ -59,7 +59,7 @@ class Magician : Application() {
                 Spacer(modifier = Modifier.height(24.dp))
                 TextButton(
                     onClick = {
-                        window.open("https://wa.me/+62895340952006")
+                        open("https://wa.me/+62895340952006")
                     }
                 ) {
                     Text("Contact the Magician")
@@ -69,7 +69,7 @@ class Magician : Application() {
                 ) {
                     IconButton(
                         onClick = {
-                            window.open("mailto:stefanus.ayudha@gmail.com")
+                            open("mailto:stefanus.ayudha@gmail.com")
                         }
                     ) {
                         Image(
@@ -81,7 +81,7 @@ class Magician : Application() {
                     }
                     IconButton(
                         onClick = {
-                            window.open("https://github.com/stefanusayudha")
+                            open("https://github.com/stefanusayudha")
                         }
                     ) {
                         Image(
@@ -93,7 +93,7 @@ class Magician : Application() {
                     }
                     IconButton(
                         onClick = {
-                            window.open("https://www.linkedin.com/in/stefanus-ayudha-447a98b5/")
+                            open("https://www.linkedin.com/in/stefanus-ayudha-447a98b5/")
                         }
                     ) {
                         Image(
@@ -105,7 +105,7 @@ class Magician : Application() {
                     }
                     IconButton(
                         onClick = {
-                            window.open("https://wa.me/+62895340952006")
+                            open("https://wa.me/+62895340952006")
                         }
                     ) {
                         Image(

@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.singularityuniverse.webpage.core.Application
 import com.singularityuniverse.webpage.core.design.Overline
 import com.singularityuniverse.webpage.core.design.TextIcon
+import com.singularityuniverse.webpage.lib.open
 import org.jetbrains.compose.resources.painterResource
 import singularityuniverse.composeapp.generated.resources.Res
 import singularityuniverse.composeapp.generated.resources.logo_of_singularity_indonesia
@@ -72,7 +73,7 @@ class About : Application() {
             )
             TextButton(
                 onClick = {
-                    kotlinx.browser.window.open("https://github.com/SingularityIndonesia/SingularityWebAppSrc")
+                    open("https://github.com/SingularityIndonesia/SingularityWebAppSrc")
                 }
             ) {
                 Text(
