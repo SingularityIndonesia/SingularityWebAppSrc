@@ -26,6 +26,7 @@ import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.*
 import com.singularityuniverse.webpage.core.Application
 import com.singularityuniverse.webpage.lib.NeuralNetwork
@@ -33,7 +34,7 @@ import kotlinx.coroutines.*
 
 class NumberRecognition : Application() {
     override val title: String = "Number Recognition Neural Network"
-    override val defaultMinSize: DpSize = DpSize(600.dp, 590.dp)
+    override val defaultMinSize: DpSize = DpSize(600.dp, 600.dp)
 
     private val brushSize = 20f
     private lateinit var localDensity: Density
@@ -108,22 +109,32 @@ class NumberRecognition : Application() {
             localDensity = density
         }
 
-        Row(
+        Column(
             modifier = Modifier.padding(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Training(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight()
-                    .border(BorderStroke(.5.dp, Color.LightGray))
+            Text(
+                text = "Network Spec: 11 Hidden Layers. Dynamic input size, 11 outputs array.",
+                style = MaterialTheme.typography.caption,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
-            Predicting(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight()
-                    .border(BorderStroke(.5.dp, Color.LightGray))
-            )
+            Spacer(modifier = Modifier.size(8.dp))
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Training(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .border(BorderStroke(.5.dp, Color.LightGray))
+                )
+                Predicting(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .border(BorderStroke(.5.dp, Color.LightGray))
+                )
+            }
         }
     }
 
