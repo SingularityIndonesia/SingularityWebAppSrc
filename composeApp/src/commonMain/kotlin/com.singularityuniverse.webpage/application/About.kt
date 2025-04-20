@@ -44,7 +44,7 @@ import singularityuniverse.composeapp.generated.resources.logo_of_singularity_in
 
 class About : Application() {
     override val title: String = "About"
-    override val defaultMinSize: DpSize = DpSize(300.dp, 400.dp)
+    override val defaultMinSize: DpSize = DpSize(300.dp, 460.dp)
 
     @OptIn(ExperimentalFoundationApi::class)
     @Composable
@@ -55,7 +55,7 @@ class About : Application() {
                 .background(MaterialTheme.colors.background),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Spacer(Modifier.size(72.dp))
+            Spacer(Modifier.size(94.dp))
             Image(
                 modifier = Modifier.size(90.dp),
                 painter = painterResource(Res.drawable.logo_of_singularity_indonesia),
@@ -69,6 +69,13 @@ class About : Application() {
             Text(
                 text = "v0.0.0-proto",
                 style = MaterialTheme.typography.overline
+            )
+            Spacer(Modifier.height(62.dp))
+            Text(
+                modifier = Modifier.padding(horizontal = 8.dp),
+                text = "100% Kotlin 100% Jetpack Compose 100% Awesome",
+                style = MaterialTheme.typography.caption,
+                textAlign = TextAlign.Center
             )
             TextButton(
                 onClick = {
