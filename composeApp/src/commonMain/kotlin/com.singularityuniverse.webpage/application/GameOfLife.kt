@@ -118,7 +118,7 @@ class GameOfLife : Application() {
                 modifier = Modifier
                     .align(Alignment.End)
                     .padding(horizontal = 8.dp),
-                horizontalArrangement = spaced8(),
+                horizontalArrangement = spaced8,
             ) {
                 OutlinedButton(
                     onClick = {

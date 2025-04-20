@@ -146,7 +146,7 @@ private fun BottomAppBar(
             .background(Color.White.copy(alpha = .7f))
             .padding(horizontal = 8.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = spaced8(),
+        horizontalArrangement = spaced8,
     ) {
         appList.forEach {
             it.Icon(
