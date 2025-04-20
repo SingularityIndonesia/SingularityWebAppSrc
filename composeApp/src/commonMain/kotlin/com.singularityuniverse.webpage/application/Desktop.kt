@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import com.singularityuniverse.webpage.core.Application
 import com.singularityuniverse.webpage.core.Window
 import com.singularityuniverse.webpage.core.WindowManagerImpl
+import com.singularityuniverse.webpage.core.design.spaced8
 import kotlinx.coroutines.launch
 
 class Desktop : Application() {
@@ -145,7 +146,7 @@ private fun BottomAppBar(
             .background(Color.White.copy(alpha = .7f))
             .padding(horizontal = 8.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = spaced8(),
     ) {
         appList.forEach {
             it.Icon(

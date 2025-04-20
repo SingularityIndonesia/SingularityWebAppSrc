@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.singularityuniverse.webpage.core.Application
 import com.singularityuniverse.webpage.core.design.Overline
+import com.singularityuniverse.webpage.core.design.Space24
 import com.singularityuniverse.webpage.core.design.TextIcon
 import com.singularityuniverse.webpage.lib.open
 import org.jetbrains.compose.resources.painterResource
@@ -58,7 +59,7 @@ class About : Application() {
                 painter = painterResource(Res.drawable.logo_of_singularity_indonesia),
                 contentDescription = null,
             )
-            Spacer(Modifier.size(24.dp))
+            Space24()
             Text(
                 text = "Singularity Universe",
                 style = MaterialTheme.typography.h6
