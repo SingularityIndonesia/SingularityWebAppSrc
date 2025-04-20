@@ -17,17 +17,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.singularityuniverse.webpage.core.Application
 import kotlinx.browser.window
 import org.jetbrains.compose.resources.painterResource
-import singularityuniverse.composeapp.generated.resources.Res
-import singularityuniverse.composeapp.generated.resources.ic_github_24
-import singularityuniverse.composeapp.generated.resources.ic_gmail_24
-import singularityuniverse.composeapp.generated.resources.ic_kaito_60
-import singularityuniverse.composeapp.generated.resources.ic_linkedin_24
-import singularityuniverse.composeapp.generated.resources.ic_whatsapp_24
-import singularityuniverse.composeapp.generated.resources.magician_profile_pict
+import singularityuniverse.composeapp.generated.resources.*
 
 class Magician : Application() {
     override val title: String = "Magician Profile"
