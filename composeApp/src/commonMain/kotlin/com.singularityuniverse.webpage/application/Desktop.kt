@@ -139,7 +139,7 @@ private fun StatusBar(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun StatusBarTitle(text: String, onClick: () -> Unit) {
+private fun StatusBarTitle(text: String, onClick: () -> Unit) {
     val interactionSource = remember { MutableInteractionSource() }
     val isHovered by interactionSource.collectIsHoveredAsState()
     Text(
