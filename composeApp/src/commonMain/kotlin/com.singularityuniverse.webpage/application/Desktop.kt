@@ -18,8 +18,13 @@
  */
 package com.singularityuniverse.webpage.application
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.hoverable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.onClick
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -113,13 +118,54 @@ class Desktop : Application() {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun StatusBar(
     modifier: Modifier,
     context: String
 ) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(Color.White.copy(alpha = .7f))
+            .padding(horizontal = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        StatusBarTitle(context, {})
+        Spacer(Modifier.weight(1f))
+        StatusBarDate { }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun StatusBarTitle(text: String, onClick: () -> Unit) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isHovered by interactionSource.collectIsHoveredAsState()
+    Text(
+        modifier = Modifier
+            .clip(RoundedCornerShape(16.dp))
+            .background(
+                if (isHovered) Color.Black.copy(alpha = .1f)
+                else Color.Transparent
+            )
+            .padding(horizontal = 8.dp)
+            .hoverable(interactionSource)
+            .onClick { onClick.invoke() },
+        text = text,
+        style = MaterialTheme.typography.body2,
+        fontWeight = FontWeight.Bold
+    )
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun StatusBarDate(onClick: () -> Unit) {
     val scope = rememberCoroutineScope()
     val clock = remember { mutableStateOf("00:00") }
+
+    val interactionSource = remember { MutableInteractionSource() }
+    val isHovered by interactionSource.collectIsHoveredAsState()
 
     DisposableEffect(Unit) {
         val job = scope.launch {
@@ -130,25 +176,20 @@ private fun StatusBar(
         }
         onDispose { job.cancel() }
     }
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(Color.White.copy(alpha = .7f))
-            .padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = context,
-            style = MaterialTheme.typography.body2,
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(Modifier.weight(1f))
-        Text(
-            text = clock.value,
-            style = MaterialTheme.typography.caption,
-            fontWeight = FontWeight.Bold
-        )
-    }
+    Text(
+        modifier = Modifier
+            .clip(RoundedCornerShape(8.dp))
+            .background(
+                if (isHovered) Color.Black.copy(alpha = .1f)
+                else Color.Transparent
+            )
+            .padding(horizontal = 8.dp)
+            .hoverable(interactionSource)
+            .onClick { onClick.invoke() },
+        text = clock.value,
+        style = MaterialTheme.typography.caption,
+        fontWeight = FontWeight.Bold
+    )
 }
 
 @Composable
