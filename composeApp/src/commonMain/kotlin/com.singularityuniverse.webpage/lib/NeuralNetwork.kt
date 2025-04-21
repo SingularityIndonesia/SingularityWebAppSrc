@@ -33,7 +33,7 @@ class NeuralNetwork(
     suspend fun train(inputs: Vector, targets: Vector, epochs: Int = 1000) = withContext(Dispatchers.Main) {
         println("Begin training")
         println("Target: ${targets.joinToString(",")}")
-        println("Initial Magnitude: ${weightsHiddenOutput.joinToString(",") { it.joinToString(",") }}")
+        println("Initial Bias: ${weightsHiddenOutput.joinToString(",") { it.joinToString(",") }}")
         repeat(epochs) {
             // Forward
             val hiddenInputs = dot(weightsInputHidden, inputs)
@@ -67,11 +67,11 @@ class NeuralNetwork(
             }
         }
 
-        println("Final Magnitude: ${weightsHiddenOutput.joinToString(",") { it.joinToString(",") }}")
+        println("Final Bias: ${weightsHiddenOutput.joinToString(",") { it.joinToString(",") }}")
     }
 
     fun predict(inputs: Vector): Vector {
-        println("With Magnitude: ${weightsHiddenOutput.joinToString(",") { it.joinToString(",") }}")
+        println("With Bias: ${weightsHiddenOutput.joinToString(",") { it.joinToString(",") }}")
         val hidden = dot(weightsInputHidden, inputs).map(::sigmoid).toDoubleArray()
         val result = dot(weightsHiddenOutput, hidden).map(::sigmoid).toDoubleArray()
         println("Result: ${result.joinToString(",")}")
