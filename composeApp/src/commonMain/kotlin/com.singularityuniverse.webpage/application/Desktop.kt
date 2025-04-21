@@ -122,7 +122,12 @@ class Desktop : Application() {
             backgroundColor = Color.Blue.copy(alpha = .7f)
         ) {
             Box(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .onClick{
+                        // clear desktop
+                        showRightDrawer = false
+                    }
             ) {
                 windowManager.Draw(
                     modifier = Modifier
