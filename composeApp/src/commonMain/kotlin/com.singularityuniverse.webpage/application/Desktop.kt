@@ -43,7 +43,7 @@ import androidx.compose.ui.unit.dp
 import com.singularityuniverse.webpage.core.Application
 import com.singularityuniverse.webpage.core.Window
 import com.singularityuniverse.webpage.core.WindowManagerImpl
-import com.singularityuniverse.webpage.core.design.spaced8
+import com.singularityuniverse.webpage.core.design.SmallGap
 import com.singularityuniverse.webpage.lib.`timeInMMMM_dd_HH:mm`
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -53,8 +53,8 @@ class Desktop : Application() {
     override val title: String = "Desktop"
     override val defaultMinSize: DpSize = DpSize.Unspecified
     private val windowManager = WindowManagerImpl()
-    private val applications = mutableStateListOf<Application>(
-        About(), NumberRecognition(), Calculator(), GameOfLife(), Magician()
+    private val applications = mutableStateListOf(
+        AppLauncher(), NumberRecognition(), Calculator(), GameOfLife(), Magician(), About()
     )
     private val windows = mutableStateListOf<Window>()
 
@@ -121,7 +121,7 @@ class Desktop : Application() {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .onClick{
+                    .onClick {
                         // clear desktop
                         showRightDrawer = false
                     }
@@ -248,11 +248,13 @@ private fun BottomAppBar(
             .background(Color.White.copy(alpha = .7f))
             .padding(horizontal = 8.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = spaced8,
+        horizontalArrangement = SmallGap,
     ) {
         appList.forEach {
             it.Icon(
-                modifier = Modifier.size(48.dp),
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(RoundedCornerShape(8.dp)),
                 onClick = {
                     onAppClicked.invoke(it)
                 }

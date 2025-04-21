@@ -33,9 +33,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.singularityuniverse.webpage.core.Application
-import com.singularityuniverse.webpage.core.design.Space16
+import com.singularityuniverse.webpage.core.design.SpaceLarge
 import com.singularityuniverse.webpage.core.design.TextIcon
-import com.singularityuniverse.webpage.core.design.spaced8
+import com.singularityuniverse.webpage.core.design.SmallGap
 import kotlin.math.absoluteValue
 
 class GameOfLife : Application() {
@@ -89,7 +89,7 @@ class GameOfLife : Application() {
             modifier = modifier
                 .padding(8.dp)
         ) {
-            Space16()
+            SpaceLarge()
 
             Box(
                 modifier = Modifier.weight(1f).fillMaxWidth(),
@@ -112,13 +112,13 @@ class GameOfLife : Application() {
                 }
             }
 
-            Space16()
+            SpaceLarge()
 
             Row(
                 modifier = Modifier
                     .align(Alignment.End)
                     .padding(horizontal = 8.dp),
-                horizontalArrangement = spaced8,
+                horizontalArrangement = SmallGap,
             ) {
                 OutlinedButton(
                     onClick = {

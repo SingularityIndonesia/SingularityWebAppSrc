@@ -33,7 +33,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.singularityuniverse.webpage.core.Application
-import com.singularityuniverse.webpage.core.design.Space24
+import com.singularityuniverse.webpage.core.design.SpaceExtraLarge
 import com.singularityuniverse.webpage.lib.open
 import org.jetbrains.compose.resources.painterResource
 import singularityuniverse.composeapp.generated.resources.*
@@ -52,7 +52,7 @@ class Magician : Application() {
                 modifier = Modifier.wrapContentSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Space24()
+                SpaceExtraLarge()
                 Image(
                     modifier = Modifier
                         .size(120.dp)
@@ -62,7 +62,7 @@ class Magician : Application() {
                     painter = painterResource(Res.drawable.magician_profile_pict),
                     contentDescription = null
                 )
-                Space24()
+                SpaceExtraLarge()
                 Text(
                     text = "Stefanus Ayudha",
                     style = MaterialTheme.typography.h5
@@ -72,7 +72,7 @@ class Magician : Application() {
                     style = MaterialTheme.typography.body2
                 )
 
-                Space24()
+                SpaceExtraLarge()
                 TextButton(
                     onClick = {
                         open("https://wa.me/+62895340952006")
@@ -132,7 +132,7 @@ class Magician : Application() {
                         )
                     }
                 }
-                Space24()
+                SpaceExtraLarge()
             }
         }
     }
