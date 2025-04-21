@@ -18,6 +18,12 @@
  */
 package com.singularityuniverse.webpage.application
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideIn
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.hoverable
@@ -69,11 +75,13 @@ class Desktop : Application() {
         windowManager.open(window)
     }
 
+    @OptIn(ExperimentalFoundationApi::class)
     @Composable
     override fun Draw(modifier: Modifier) {
         // fixme: make facade
         val topApplication = windowManager.windowOrder.lastOrNull()?.app
         val scope = rememberCoroutineScope()
+        var showRightDrawer by remember { mutableStateOf(false) }
 
         LaunchedEffect(Unit) {
             openApp(applications.firstOrNull { it is About } ?: return@LaunchedEffect)
@@ -88,7 +96,11 @@ class Desktop : Application() {
                 StatusBar(
                     modifier = Modifier
                         .height(25.dp),
-                    context = topApplication?.title.orEmpty()
+                    context = topApplication?.title.orEmpty(),
+                    onTitleClicked = {},
+                    onDateClicked = {
+                        showRightDrawer = !showRightDrawer
+                    }
                 )
             },
             bottomBar = {
@@ -109,11 +121,38 @@ class Desktop : Application() {
             },
             backgroundColor = Color.Blue.copy(alpha = .7f)
         ) {
-            windowManager.Draw(
-                modifier = Modifier
-                    .fillMaxSize(),
-                safeContentPadding = it
-            )
+            Box(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                windowManager.Draw(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    safeContentPadding = it
+                )
+                AnimatedVisibility(
+                    visible = showRightDrawer,
+                    modifier = Modifier.align(Alignment.TopEnd),
+                    enter = slideInHorizontally(initialOffsetX = { it }),
+                    exit = slideOutHorizontally(targetOffsetX = { it })
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .padding(8.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .width(300.dp)
+                            .background(Color.White.copy(alpha = 0.7f))
+                    ) {
+                        Text(
+                            modifier = Modifier.align(Alignment.Center)
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(Color.Black.copy(alpha = .1f))
+                                .padding(horizontal = 16.dp, vertical = 4.dp),
+                            text = "No widget Available"
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -122,7 +161,9 @@ class Desktop : Application() {
 @Composable
 private fun StatusBar(
     modifier: Modifier,
-    context: String
+    context: String,
+    onTitleClicked: () -> Unit,
+    onDateClicked: () -> Unit,
 ) {
     Row(
         modifier = modifier
@@ -131,9 +172,9 @@ private fun StatusBar(
             .padding(horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        StatusBarTitle(context, {})
+        StatusBarTitle(context, onTitleClicked)
         Spacer(Modifier.weight(1f))
-        StatusBarDate { }
+        StatusBarDate(onDateClicked)
     }
 }
 
