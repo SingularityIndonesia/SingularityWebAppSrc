@@ -139,22 +139,4 @@ class Magician : Application() {
             }
         }
     }
-
-    @OptIn(ExperimentalFoundationApi::class)
-    @Composable
-    override fun Icon(modifier: Modifier, onClick: () -> Unit) {
-        Box(
-            modifier = modifier
-                .clip(RoundedCornerShape(8.dp))
-                .background(MaterialTheme.colors.background)
-                .onClick { onClick.invoke() },
-            contentAlignment = Alignment.Center
-        ) {
-            Image(
-                modifier = Modifier.padding(8.dp),
-                painter = painterResource(Res.drawable.ic_kaito_60),
-                contentDescription = null
-            )
-        }
-    }
 }
