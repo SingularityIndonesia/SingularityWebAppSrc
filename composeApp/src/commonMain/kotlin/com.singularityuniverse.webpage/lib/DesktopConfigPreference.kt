@@ -1,7 +1,7 @@
 package com.singularityuniverse.webpage.lib
 
 import androidx.compose.ui.graphics.Color
-import com.singularityuniverse.webpage.lib.io.sharepreference.SharePreference
+import com.singularityuniverse.webpage.lib.io.localstorage.LocalStorage
 
 interface DesktopConfigPreference {
     fun getBackgroundColor(): Color?
@@ -9,7 +9,7 @@ interface DesktopConfigPreference {
 }
 
 class DesktopConfigPreferenceImpl(
-    private val sharedPreference: SharePreference
+    private val localStorage: LocalStorage
 ) : DesktopConfigPreference {
     companion object {
         private val BACKGROUND_COLOR_PREFERENCE_KEY = "${DesktopConfigPreference::class.simpleName}_background_color"
@@ -17,7 +17,7 @@ class DesktopConfigPreferenceImpl(
 
     override fun getBackgroundColor(): Color? {
         // expecting format listOf(int R,int G,int B,int A)
-        val colorHex = sharedPreference
+        val colorHex = localStorage
             .get(BACKGROUND_COLOR_PREFERENCE_KEY)
             .split(",")
             .map { it.toInt() }
@@ -33,7 +33,7 @@ class DesktopConfigPreferenceImpl(
 
     override fun setBackgroundColor(color: Color) {
         val config = color.run { listOf(red, green, blue, alpha) }.joinToString(",") { it.toInt().toString() }
-        sharedPreference.set(
+        localStorage.set(
             BACKGROUND_COLOR_PREFERENCE_KEY,
             config
         )

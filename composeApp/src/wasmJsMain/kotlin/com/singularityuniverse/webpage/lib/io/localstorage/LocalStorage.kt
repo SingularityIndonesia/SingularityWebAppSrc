@@ -1,12 +1,16 @@
-package com.singularityuniverse.webpage.lib.io.sharepreference
+package com.singularityuniverse.webpage.lib.io.localstorage
 
 import kotlinx.browser.localStorage
+
+actual fun getLocalStorage(): LocalStorage {
+    return WasmJsLocalStorage()
+}
 
 /**
  * WasmJS implementation of SharePreference using the browser's localStorage
  * for persistent data storage in the web environment.
  */
-class WasmJsSharePreference : SharePreference {
+class WasmJsLocalStorage : LocalStorage {
     /**
      * Stores a string value associated with the given key in localStorage.
      *
