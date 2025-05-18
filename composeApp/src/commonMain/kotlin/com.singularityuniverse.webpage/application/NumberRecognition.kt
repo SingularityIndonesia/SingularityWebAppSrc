@@ -48,8 +48,8 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.singularityuniverse.webpage.core.Application
+import com.singularityuniverse.webpage.core.design.Arrangement
 import com.singularityuniverse.webpage.core.design.TextIcon
-import com.singularityuniverse.webpage.core.design.SmallGap
 import com.singularityuniverse.webpage.lib.NeuralNetwork
 import kotlinx.coroutines.*
 
@@ -141,7 +141,7 @@ class NumberRecognition : Application() {
             )
             Spacer(modifier = Modifier.size(8.dp))
             Row(
-                horizontalArrangement = SmallGap
+                horizontalArrangement = Arrangement.MediumSpace
             ) {
                 Training(
                     modifier = Modifier
@@ -189,7 +189,7 @@ class NumberRecognition : Application() {
         Column(
             modifier = modifier
                 .then(Modifier.padding(8.dp)),
-            verticalArrangement = SmallGap
+            verticalArrangement = Arrangement.MediumSpace
         ) {
             Text(text = "Training")
             TextField(
@@ -253,7 +253,7 @@ class NumberRecognition : Application() {
 
             LazyRow(
                 modifier = Modifier.wrapContentHeight(),
-                horizontalArrangement = SmallGap,
+                horizontalArrangement = Arrangement.MediumSpace,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (trainingPreview.value != null) {
@@ -280,7 +280,7 @@ class NumberRecognition : Application() {
 
             LazyRow(
                 modifier = Modifier.wrapContentHeight().align(Alignment.End),
-                horizontalArrangement = SmallGap,
+                horizontalArrangement = Arrangement.MediumSpace,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 items(trainingBuffer.size) {
@@ -345,7 +345,7 @@ class NumberRecognition : Application() {
         Column(
             modifier = modifier
                 .then(Modifier.padding(8.dp)),
-            verticalArrangement = SmallGap
+            verticalArrangement = Arrangement.MediumSpace
         ) {
             Text(text = "Predicting")
             TextField(
@@ -380,7 +380,7 @@ class NumberRecognition : Application() {
 
             Row(
                 modifier = Modifier.align(Alignment.End),
-                horizontalArrangement = SmallGap,
+                horizontalArrangement = Arrangement.MediumSpace,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (predictionPreview.value != null) {

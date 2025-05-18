@@ -43,7 +43,7 @@ import androidx.compose.ui.unit.dp
 import com.singularityuniverse.webpage.core.Application
 import com.singularityuniverse.webpage.core.Window
 import com.singularityuniverse.webpage.core.WindowManagerImpl
-import com.singularityuniverse.webpage.core.design.SmallGap
+import com.singularityuniverse.webpage.core.design.Arrangement
 import com.singularityuniverse.webpage.lib.`timeInMMMM_dd_HH:mm`
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -248,7 +248,7 @@ private fun BottomAppBar(
             .background(Color.White.copy(alpha = .7f))
             .padding(horizontal = 8.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = SmallGap,
+        horizontalArrangement = Arrangement.MediumSpace,
     ) {
         appList.forEach {
             it.Icon(

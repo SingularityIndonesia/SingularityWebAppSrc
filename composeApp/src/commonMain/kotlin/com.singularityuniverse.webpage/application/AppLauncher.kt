@@ -20,13 +20,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.singularityuniverse.webpage.core.Application
-import com.singularityuniverse.webpage.core.design.PaddingMedium
-import com.singularityuniverse.webpage.core.design.SmallGap
+import com.singularityuniverse.webpage.core.design.Arrangement
+import com.singularityuniverse.webpage.core.design.Padding
 import com.singularityuniverse.webpage.core.design.SpaceMedium
 import org.jetbrains.compose.resources.painterResource
 import singularityuniverse.composeapp.generated.resources.Res
 import singularityuniverse.composeapp.generated.resources.ic_launcher_60
-import singularityuniverse.composeapp.generated.resources.logo_of_singularity_indonesia
 
 class AppLauncher : Application() {
     override val title: String = "App Launcher (Under development)"
@@ -45,9 +44,9 @@ class AppLauncher : Application() {
     override fun Draw(modifier: Modifier) {
         LazyVerticalGrid(
             modifier = Modifier.wrapContentSize(),
-            contentPadding = PaddingMedium,
-            verticalArrangement = SmallGap,
-            horizontalArrangement = SmallGap,
+            contentPadding = Padding.Medium,
+            verticalArrangement = Arrangement.MediumSpace,
+            horizontalArrangement = Arrangement.MediumSpace,
             columns = GridCells.Adaptive(iconSize + 8.dp),
         ) {
             items(appList) {
