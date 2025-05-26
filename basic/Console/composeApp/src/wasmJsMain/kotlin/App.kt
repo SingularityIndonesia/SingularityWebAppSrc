@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
@@ -24,10 +25,7 @@ import org.singularityuniverse.console.utils.windowId
 
 @Composable
 fun App() {
-    val console = remember { Console() }
     MaterialTheme {
-        val focusRequester = remember { FocusRequester() }
-        val listState = rememberLazyListState()
         val contentColor = Color(0xff097233)
         val textStyle = MaterialTheme.typography.bodyMedium
 
@@ -35,46 +33,56 @@ fun App() {
             LocalTextStyle provides textStyle,
             LocalContentColor provides contentColor
         ) {
-            LazyColumn(
-                state = listState,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black)
-                    .padding(8.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                item { Text("Welcome to Singularity Multi Microsite Jetpack Compose Project.") }
-                item { Text("Type `help()` to see available tools or `info()` for more info.") }
-                item { Spacer(modifier = Modifier.height(16.dp)) }
-                items(console.logs) { log ->
-                    Text(
-                        text = log
-                            .replace("PROMPT:", ("$windowId js >")),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-
-                item(focusRequester) {
-                    PromptInput(
-                        focusRequester = focusRequester
-                    ) { command ->
-                        // Add the command to logs
-
-                        // Process the command
-                        when (command.lowercase().trim()) {
-                            "clear()" -> console.logs.clear()
-                            "" -> {}
-                            else -> console.eval(command)
-                        }
-                    }
-                }
-            }
-
-            LaunchedEffect(Unit) {
-                listState.scrollToItem(console.logs.size)
-                focusRequester.requestFocus()
+            SelectionContainer {
+                Shell()
             }
         }
+    }
+}
+
+@Composable
+fun Shell() {
+    val console = remember { Console() }
+    val focusRequester = remember { FocusRequester() }
+    val listState = rememberLazyListState()
+
+    LazyColumn(
+        state = listState,
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black)
+            .padding(8.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        item { Text("Welcome to Singularity Multi Microsite Jetpack Compose Project.") }
+        item { Text("Type `help()` to see available tools or `info()` for more info.") }
+        item { Spacer(modifier = Modifier.height(16.dp)) }
+        items(console.logs) { log ->
+            Text(
+                text = log
+                    .replace("PROMPT:", ("$windowId js >")),
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        item(focusRequester) {
+            PromptInput(
+                focusRequester = focusRequester
+            ) { command ->
+                // Add the command to logs
+
+                // Process the command
+                when (command.lowercase().trim()) {
+                    "clear()" -> console.logs.clear()
+                    "" -> {}
+                    else -> console.eval(command)
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        listState.scrollToItem(console.logs.size)
+        focusRequester.requestFocus()
     }
 }
 
@@ -100,9 +108,7 @@ private fun PromptInput(
                 .focusRequester(focusRequester),
             cursorBrush = SolidColor(LocalContentColor.current),
             textStyle = LocalTextStyle.current
-                .copy(
-                    color = LocalContentColor.current
-                ),
+                .copy(color = LocalContentColor.current),
             decorationBox = { innerTextField ->
                 innerTextField()
             },
