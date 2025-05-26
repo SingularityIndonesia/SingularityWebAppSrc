@@ -62,7 +62,7 @@ fun App() {
                         focusRequester = focusRequester
                     ) { command ->
                         // Add the command to logs
-                        logs.add("$windowId > $command")
+                        logs.add("$windowId js > $command")
 
                         // Process the command
                         when (command.lowercase().trim()) {
@@ -99,7 +99,7 @@ private fun PromptInput(
         modifier = Modifier.fillMaxWidth(),
     ) {
         Text(
-            text = "$windowId > ",
+            text = "$windowId js > ",
         )
 
         BasicTextField(
