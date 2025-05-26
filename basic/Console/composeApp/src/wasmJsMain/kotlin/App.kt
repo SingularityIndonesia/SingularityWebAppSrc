@@ -66,7 +66,7 @@ fun App() {
 
                         // Process the command
                         when (command.lowercase().trim()) {
-                            "clear" -> logs.clear()
+                            "clear()" -> logs.clear()
                             "" -> { /* Do nothing for empty commands */
                             }
 
