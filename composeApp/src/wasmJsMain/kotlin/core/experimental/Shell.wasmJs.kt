@@ -1,8 +1,6 @@
 package core.experimental
 
 import kotlinx.browser.document
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import org.w3c.dom.HTMLIFrameElement
 import org.w3c.dom.Window
 
@@ -94,6 +92,18 @@ actual class Shell actual constructor(
                 iframe.contentWindow!!.window,
                 "procId",
                 "`${iframe.id}`"
+            )
+
+            injectFunction(
+                iframe.contentWindow!!.window,
+                "help",
+                "() => fetch('/docs/help.txt').then(r => r.text()).then(console.log).catch(e => console.error('Help not available:', e))"
+            )
+
+            injectFunction(
+                iframe.contentWindow!!.window,
+                "info",
+                "() => fetch('/docs/info.txt').then(r => r.text()).then(console.log).catch(e => console.error('Info not available:', e))"
             )
         }
     }
