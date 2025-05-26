@@ -19,19 +19,27 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import org.singularityuniverse.console.utils.windowId
+
+private val GREEN = Color(0xff097233)
+private val BLUE = Color(0xff095c9a)
+private val RED = Color(0xffa92426)
+private val WHITE = Color(0xffb1adbf)
 
 @Composable
 fun App() {
     MaterialTheme {
-        val contentColor = Color(0xff097233)
         val textStyle = MaterialTheme.typography.bodyMedium
 
         CompositionLocalProvider(
             LocalTextStyle provides textStyle,
-            LocalContentColor provides contentColor
+            LocalContentColor provides GREEN
         ) {
             SelectionContainer {
                 Shell()
@@ -58,9 +66,30 @@ fun Shell() {
         item { Text("Type `help()` to see available tools or `info()` for more info.") }
         item { Spacer(modifier = Modifier.height(16.dp)) }
         items(console.logs) { log ->
+            val text = buildAnnotatedString {
+                if (log.contains("PROMPT: ")) {
+                    withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = BLUE)) {
+                        append("$windowId js ")
+                    }
+                    withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = WHITE)) {
+                        append("> ")
+                    }
+                }
+
+                val remainingText = log.split("PROMPT: ").lastOrNull().orEmpty()
+
+                val style = when {
+                    remainingText.contains("ERROR: ") -> SpanStyle(fontWeight = FontWeight.Bold, color = RED)
+                    else -> SpanStyle(fontWeight = FontWeight.Normal, color = LocalContentColor.current)
+                }
+
+                withStyle(style) {
+                    append(remainingText)
+                }
+            }
+
             Text(
-                text = log
-                    .replace("PROMPT:", ("$windowId js >")),
+                text = text,
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -80,7 +109,7 @@ fun Shell() {
         }
     }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(console.logs.size) {
         listState.scrollToItem(console.logs.size)
         focusRequester.requestFocus()
     }
@@ -97,7 +126,15 @@ private fun PromptInput(
         modifier = Modifier.fillMaxWidth(),
     ) {
         Text(
-            text = "$windowId js > ",
+            text = buildAnnotatedString {
+                withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = BLUE)) {
+                    append("$windowId js ")
+                }
+                withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = WHITE)) {
+                    append("> ")
+                }
+            },
+            style = LocalTextStyle.current
         )
 
         BasicTextField(
