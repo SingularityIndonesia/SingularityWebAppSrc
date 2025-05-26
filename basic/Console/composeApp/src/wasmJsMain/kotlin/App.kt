@@ -17,6 +17,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -31,51 +32,60 @@ fun App() {
         val logs = remember { mutableStateListOf<String>() }
         val focusRequester = remember { FocusRequester() }
         val listState = rememberLazyListState()
+        val textStyle = remember {
+            TextStyle(
+                color = Color.Green,
+                fontFamily = FontFamily.Monospace,
+                fontSize = 14.sp,
+            )
+        }
 
-        LazyColumn(
-            state = listState,
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black)
-                .padding(8.dp),
-            verticalArrangement = Arrangement.spacedBy(2.dp)
-        ) {
-            items(logs) { log ->
-                Text(
-                    text = log,
-                    color = Color.Green,
-                    fontFamily = FontFamily.Monospace,
-                    fontSize = 14.sp,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
+        CompositionLocalProvider(LocalTextStyle provides textStyle) {
+            LazyColumn(
+                state = listState,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black)
+                    .padding(8.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                item { Text("Welcome to Singularity Multi Microsite Jetpack Compose Project.") }
+                item { Text("Type help for info.") }
+                item {  }
+                items(logs) { log ->
+                    Text(
+                        text = log,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
 
-            item(focusRequester) {
-                PromptInput(
-                    focusRequester = focusRequester
-                ) { command ->
-                    // Add the command to logs
-                    logs.add("$windowId > $command")
+                item(focusRequester) {
+                    PromptInput(
+                        focusRequester = focusRequester
+                    ) { command ->
+                        // Add the command to logs
+                        logs.add("$windowId > $command")
 
-                    // Process the command
-                    when (command.lowercase().trim()) {
-                        "clear" -> logs.clear()
-                        "" -> { /* Do nothing for empty commands */
-                        }
+                        // Process the command
+                        when (command.lowercase().trim()) {
+                            "clear" -> logs.clear()
+                            "" -> { /* Do nothing for empty commands */
+                            }
 
-                        else -> {
-                            // Execute JavaScript in browser console
-                            val result = executeJavaScript(command)
-                            logs.add(result)
+                            else -> {
+                                // Execute JavaScript in browser console
+                                val result = executeJavaScript(command)
+                                logs.add(result)
+                            }
                         }
                     }
                 }
             }
-        }
 
-        LaunchedEffect(Unit) {
-            listState.scrollToItem(logs.size)
-            focusRequester.requestFocus()
+            LaunchedEffect(Unit) {
+                listState.scrollToItem(logs.size)
+                focusRequester.requestFocus()
+            }
         }
     }
 }
@@ -92,9 +102,6 @@ private fun PromptInput(
     ) {
         Text(
             text = "$windowId > ",
-            color = Color.Green,
-            fontFamily = FontFamily.Monospace,
-            fontSize = 14.sp
         )
 
         BasicTextField(
