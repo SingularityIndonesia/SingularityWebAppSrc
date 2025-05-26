@@ -67,8 +67,45 @@ fun promptWrapper(prompt: String): String =
             let errorOccurred = false;
             let errorMessage = '';
             
+            // Function to process variable declarations
+            const processVariableDeclarations = (code) => {
+                // Split by semicolons and process each statement
+                const statements = code.split(';').map(s => s.trim()).filter(s => s.length > 0);
+                
+                return statements.map(statement => {
+                    // Handle "let x = value" pattern
+                    const letMatch = statement.match(/^\s*let\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=\s*(.+)/);
+                    if (letMatch) {
+                        return `window.${"$" + "{letMatch[1]}"} = ${"$" + "{letMatch[2]}"}`;
+                    }
+                    
+                    // Handle "const x = value" pattern
+                    const constMatch = statement.match(/^\s*const\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=\s*(.+)/);
+                    if (constMatch) {
+                        return `window.${"$" + "{constMatch[1]}"} = ${"$" + "{constMatch[2]}"}`;
+                    }
+                    
+                    // Handle "var x = value" pattern
+                    const varMatch = statement.match(/^\s*var\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=\s*(.+)/);
+                    if (varMatch) {
+                        return `window.${"$" + "{varMatch[1]}"} = ${"$" + "{varMatch[2]}"}`;
+                    }
+                    
+                    // Handle simple assignment "x = value" pattern (but not if it already has window.)
+                    const assignMatch = statement.match(/^\s*([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=\s*(.+)/);
+                    if (assignMatch && !statement.includes('window.')) {
+                        return `window.${"$" + "{assignMatch[1]}"} = ${"$" + "{assignMatch[2]}"}`;
+                    }
+                    
+                    // Return statement as-is if it doesn't match any pattern
+                    return statement;
+                }).join('; ');
+            };
+            
             try {
-                result = ${prompt.removeSuffix(";")};
+                // Process variable declarations first
+                const processedCode = processVariableDeclarations(`${prompt.removeSuffix(";")}`);
+                result = eval(processedCode);
                 
                 // Handle promises - wait for them to complete before restoring console
                 if (result && typeof result.then === 'function') {
