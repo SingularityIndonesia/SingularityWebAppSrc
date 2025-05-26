@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# first compile subproject
+script/compile-subproject
+
+# compile main project
+./gradlew :composeApp:clean
+./gradlew :composeApp:wasmJsBrowserDistribution
+
+rm -rf composeApp/build/release/
+mkdir composeApp/build/release/
+cp -r composeApp/build/dist/wasmJs/productionExecutable/* composeApp/build/release/

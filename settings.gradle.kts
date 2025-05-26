@@ -47,3 +47,5 @@ dependencyResolutionManagement {
 }
 
 include(":composeApp")
+includeBuild("basic/Console")
+includeBuild("basic/Desktop")

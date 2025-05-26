@@ -17,17 +17,30 @@
  * USA
  */
 
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
-import application.Desktop
+import androidx.compose.runtime.rememberCoroutineScope
+import core.experimental.Shell
+import kotlinx.coroutines.launch
 
 @Composable
 fun App() {
-    val desktop = remember { Desktop() }
-    MaterialTheme {
-        desktop.Draw(modifier = Modifier.fillMaxSize())
+    val scope = rememberCoroutineScope()
+    val shell = remember { Shell("main-shell") }
+
+    DisposableEffect(shell) {
+
+        val job = scope.launch {
+             shell.exec("/application/Console/index.html")
+        }
+
+        onDispose {
+            job.cancel()
+            scope.launch {
+                shell.terminate()
+                shell.destroy()
+            }
+        }
     }
 }

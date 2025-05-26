@@ -45,7 +45,7 @@ kotlin {
         }
         binaries.executable()
     }
-    
+
     sourceSets {
         commonMain {
             kotlin.srcDir("src/commonMain/kotlin")
@@ -65,4 +65,24 @@ kotlin {
     }
 }
 
+// Automatically compile subprojects before running development server
+tasks.register("compileSubprojects", Exec::class) {
+    group = "build"
+    description = "Compile all subprojects and copy their distributions"
+    
+    workingDir = rootProject.rootDir
+    commandLine("bash", "script/compile-subproject")
+    
+    // Make this task depend on the subprojects being available
+    doFirst {
+        val scriptFile = File(rootProject.rootDir, "script/compile-subproject")
+        if (!scriptFile.exists()) {
+            throw GradleException("Script not found: ${scriptFile.absolutePath}")
+        }
+    }
+}
 
+// Make the development run task depend on compiling subprojects
+tasks.named("wasmJsBrowserDevelopmentRun") {
+    dependsOn("compileSubprojects")
+}

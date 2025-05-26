@@ -1,0 +1,31 @@
+#!/bin/bash
+# remove all package in composeApp/src/wasmJsMain/resources/application/sub_project/
+rm -rf composeApp/src/wasmJsMain/resources/application/*
+
+# find all associated projects
+# list all directory in ./basic/
+list_sub_projects=$(ls -d ./basic/*/ 2>/dev/null | xargs -n 1 basename)
+
+# clean all
+#for project in $list_sub_projects; do
+#    ./gradlew :$project:composeApp:clean
+#done
+
+# for every subprojects directory, run:
+# - cd target-dir
+# - run: ./gradlew :composeApp:wasmJsBrowserDistribution
+for project in $list_sub_projects; do
+    echo "Building $project..."
+    ./gradlew :$project:composeApp:wasmJsBrowserDistribution &
+done
+
+wait
+
+# for every list_sub_projects copy recursively the sub_project/build/dist/wasmJs/productionExecutable/* into composeApp/src/wasmJsMain/resources/application/sub_project/
+for project in $list_sub_projects; do
+    echo "Copying $project distribution files..."
+    mkdir -p "composeApp/src/wasmJsMain/resources/application/$project/"
+    cp -r "./basic/$project/composeApp/build/dist/wasmJs/productionExecutable/"* "composeApp/src/wasmJsMain/resources/application/$project/"
+done
+
+echo "All builds are finished!"
