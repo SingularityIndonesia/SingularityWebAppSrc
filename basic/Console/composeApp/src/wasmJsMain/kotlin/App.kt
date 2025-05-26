@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -17,11 +18,9 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import org.singularityuniverse.console.utils.windowId
 
 @Composable
 fun App() {
@@ -29,16 +28,13 @@ fun App() {
     MaterialTheme {
         val focusRequester = remember { FocusRequester() }
         val listState = rememberLazyListState()
-        val textStyle = remember {
-            TextStyle(
-                color = Color.Green,
-                fontFamily = FontFamily.Monospace,
-                fontSize = 14.sp,
-                lineHeight = 18.sp
-            )
-        }
+        val contentColor = Color(0xff097233)
+        val textStyle = MaterialTheme.typography.bodyMedium
 
-        CompositionLocalProvider(LocalTextStyle provides textStyle) {
+        CompositionLocalProvider(
+            LocalTextStyle provides textStyle,
+            LocalContentColor provides contentColor
+        ) {
             LazyColumn(
                 state = listState,
                 modifier = Modifier
@@ -49,10 +45,11 @@ fun App() {
             ) {
                 item { Text("Welcome to Singularity Multi Microsite Jetpack Compose Project.") }
                 item { Text("Type `help()` to see available tools or `info()` for more info.") }
-                item { }
+                item { Spacer(modifier = Modifier.height(16.dp)) }
                 items(console.logs) { log ->
                     Text(
-                        text = log.replace("PROMPT:","$windowId js >"),
+                        text = log
+                            .replace("PROMPT:", ("$windowId js >")),
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -101,12 +98,11 @@ private fun PromptInput(
             modifier = Modifier
                 .weight(1f)
                 .focusRequester(focusRequester),
-            cursorBrush = SolidColor(Color.Green),
-            textStyle = LocalTextStyle.current.copy(
-                fontFamily = FontFamily.Monospace,
-                fontSize = 14.sp,
-                color = Color.Green,
-            ),
+            cursorBrush = SolidColor(LocalContentColor.current),
+            textStyle = LocalTextStyle.current
+                .copy(
+                    color = LocalContentColor.current
+                ),
             decorationBox = { innerTextField ->
                 innerTextField()
             },
