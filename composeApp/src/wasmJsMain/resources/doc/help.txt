@@ -1,0 +1,7 @@
+Available tools
+
+help - show help content
+info - show system basic info)
+exec - execute url within an iframe window. e.g: exec("/application/Desktop/index.html")
+
+Basic tools of Js.WindowElement also available such fetch, console, etc.

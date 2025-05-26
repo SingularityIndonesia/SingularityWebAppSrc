@@ -1,0 +1,6 @@
+Singularity Project is a Multi Microsite Website built in jetpack compose for web.
+As for now, this project serves no specific purposes but to reflect my Narcissistic personality and my for fun project.
+
+The main goal is to make every site a microsite and make it launchable as a normal application within the browser.
+As for now, the main focus is to create shell-like mechanism, and the final idea is to make Desktop like interface with window manager.
+You can try the desktop by running exec("/application/Desktop/index.html").
