@@ -97,13 +97,13 @@ actual class Shell actual constructor(
             injectFunction(
                 iframe.contentWindow!!.window,
                 "help",
-                "() => fetch('/docs/help.txt').then(r => r.text()).then(console.log).catch(e => console.error('Help not available:', e))"
+                "() => fetch('/docs/help.txt').then(r => r.text())"
             )
 
             injectFunction(
                 iframe.contentWindow!!.window,
                 "info",
-                "() => fetch('/docs/info.txt').then(r => r.text()).then(console.log).catch(e => console.error('Info not available:', e))"
+                "() => fetch('/docs/info.txt').then(r => r.text())"
             )
         }
     }

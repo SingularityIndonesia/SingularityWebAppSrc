@@ -48,7 +48,7 @@ fun App() {
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 item { Text("Welcome to Singularity Multi Microsite Jetpack Compose Project.") }
-                item { Text("Type help for info.") }
+                item { Text("Type `help()` for to see available tools.") }
                 item { }
                 items(console.logs) { log ->
                     Text(
