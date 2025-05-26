@@ -21,6 +21,9 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.browser.window
+
+val windowId = window.frameElement?.id
 
 @Composable
 fun App() {
@@ -52,12 +55,14 @@ fun App() {
                     focusRequester = focusRequester
                 ) { command ->
                     // Add the command to logs
-                    logs.add("js > $command")
+                    logs.add("$windowId > $command")
 
                     // Process the command
                     when (command.lowercase().trim()) {
                         "clear" -> logs.clear()
-                        "" -> { /* Do nothing for empty commands */ }
+                        "" -> { /* Do nothing for empty commands */
+                        }
+
                         else -> {
                             // Execute JavaScript in browser console
                             val result = executeJavaScript(command)
@@ -86,7 +91,7 @@ private fun PromptInput(
         modifier = Modifier.fillMaxWidth(),
     ) {
         Text(
-            text = "js > ",
+            text = "$windowId > ",
             color = Color.Green,
             fontFamily = FontFamily.Monospace,
             fontSize = 14.sp

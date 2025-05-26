@@ -4,7 +4,7 @@ open class Process(
     open val id: String,
     open val command: String
 ) {
-    open suspend fun kill() {
+    open fun kill() {
 
     }
 }
@@ -15,8 +15,8 @@ expect class Shell(
 ) {
     val processes: MutableList<Process>
 
-    suspend fun exec(url: String): Process
-    suspend fun kill(processId: String)
-    suspend fun terminate()
-    suspend fun destroy()
+    fun exec(url: String): Process
+    fun kill(processId: String)
+    fun terminate()
+    fun destroy()
 }

@@ -3,8 +3,6 @@ package core.experimental
 import kotlinx.browser.document
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 import org.w3c.dom.HTMLIFrameElement
 import org.w3c.dom.Window
 
@@ -18,8 +16,6 @@ external fun setWindowCallback(name: String, callback: (String) -> Unit)
 actual class Shell actual constructor(
     override val id: String,
 ) : Process(id, "/") {
-
-    private val scope = CoroutineScope(Dispatchers.Main)
     actual val processes = mutableListOf<Process>()
 
     private val nextId: String
@@ -40,7 +36,7 @@ actual class Shell actual constructor(
      * </div>
      * ```
      */
-    actual suspend fun exec(url: String): Process = coroutineScope {
+    actual fun exec(url: String): Process {
         val proc = Process(id = nextId, command = url)
         val mainContainer = document.getElementById("root")
             ?: throw NullPointerException("Error: no root element found")
@@ -64,7 +60,7 @@ actual class Shell actual constructor(
 
         processes.add(proc)
         println("Process ${proc.id} finished")
-        proc
+        return proc
     }
 
     private fun injectBasicUtilsToIframe(iframe: HTMLIFrameElement) {
@@ -72,10 +68,7 @@ actual class Shell actual constructor(
             // region inject exec
             val execCallback: (String) -> Unit = { url ->
                 println("trying to execute $url")
-
-                scope.launch {
-                    this@Shell.exec(url)
-                }
+                this@Shell.exec(url)
             }
 
             // Store callback on parent window with unique name
@@ -105,28 +98,26 @@ actual class Shell actual constructor(
         }
     }
 
-    actual suspend fun kill(processId: String) {
+    actual fun kill(processId: String) {
         // remove iframe, and destroy instance
-        scope.launch {
-            val proc = processes.find { it.id == processId } ?: return@launch
+        val proc = processes.find { it.id == processId } ?: return
 
-            proc.kill()
-            processes.remove(proc)
-            val iframe = document.getElementById(proc.id)
-            if (iframe != null) {
-                iframe.remove()
-                println("Removed iframe: ${proc.id}")
-            } else {
-                println("Could not find iframe with id: ${proc.id}")
-            }
+        proc.kill()
+        processes.remove(proc)
+        val iframe = document.getElementById(proc.id)
+        if (iframe != null) {
+            iframe.remove()
+            println("Removed iframe: ${proc.id}")
+        } else {
+            println("Could not find iframe with id: ${proc.id}")
         }
     }
 
-    actual suspend fun terminate() {
+    actual fun terminate() {
         processes.forEach { kill(it.id) }
     }
 
-    actual suspend fun destroy() {
+    actual fun destroy() {
 
     }
 }
