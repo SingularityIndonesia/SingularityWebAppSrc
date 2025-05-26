@@ -22,12 +22,11 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.browser.window
 
 @Composable
 fun App() {
+    val console = remember { Console() }
     MaterialTheme {
-        val logs = remember { mutableStateListOf<String>() }
         val focusRequester = remember { FocusRequester() }
         val listState = rememberLazyListState()
         val textStyle = remember {
@@ -49,8 +48,8 @@ fun App() {
             ) {
                 item { Text("Welcome to Singularity Multi Microsite Jetpack Compose Project.") }
                 item { Text("Type help for info.") }
-                item {  }
-                items(logs) { log ->
+                item { }
+                items(console.logs) { log ->
                     Text(
                         text = log,
                         modifier = Modifier.fillMaxWidth()
@@ -62,26 +61,19 @@ fun App() {
                         focusRequester = focusRequester
                     ) { command ->
                         // Add the command to logs
-                        logs.add("$windowId js > $command")
 
                         // Process the command
                         when (command.lowercase().trim()) {
-                            "clear()" -> logs.clear()
-                            "" -> { /* Do nothing for empty commands */
-                            }
-
-                            else -> {
-                                // Execute JavaScript in browser console
-                                val result = eval(command)
-                                logs.add(result.toString())
-                            }
+                            "clear()" -> console.logs.clear()
+                            "" -> {}
+                            else -> console.eval("$windowId js > $command")
                         }
                     }
                 }
             }
 
             LaunchedEffect(Unit) {
-                listState.scrollToItem(logs.size)
+                listState.scrollToItem(console.logs.size)
                 focusRequester.requestFocus()
             }
         }
