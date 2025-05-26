@@ -1,7 +1,7 @@
 Available tools
 
 help - show help content
-info - show system basic info)
+info - show system basic info
 exec - execute url within an iframe window. e.g: exec("/application/Desktop/index.html")
 clear - clear the console logs
 
