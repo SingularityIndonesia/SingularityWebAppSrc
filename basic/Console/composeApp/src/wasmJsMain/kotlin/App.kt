@@ -34,6 +34,7 @@ fun App() {
                 color = Color.Green,
                 fontFamily = FontFamily.Monospace,
                 fontSize = 14.sp,
+                lineHeight = 18.sp
             )
         }
 
@@ -51,7 +52,7 @@ fun App() {
                 item { }
                 items(console.logs) { log ->
                     Text(
-                        text = log,
+                        text = log.replace("PROMPT:","$windowId js >"),
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -66,7 +67,7 @@ fun App() {
                         when (command.lowercase().trim()) {
                             "clear()" -> console.logs.clear()
                             "" -> {}
-                            else -> console.eval("$windowId js > $command")
+                            else -> console.eval(command)
                         }
                     }
                 }

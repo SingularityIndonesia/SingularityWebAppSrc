@@ -3,11 +3,7 @@ package org.singularityuniverse.console
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import kotlinx.browser.window
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.await
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlin.js.Promise
 
 @JsName("eval")
@@ -22,18 +18,14 @@ class Console {
     private val scope = CoroutineScope(Dispatchers.Default)
     private var job: Job? = null
 
-    /**
-     * @param prompt semantic = prefix > actual_prompt
-     */
     fun eval(prompt: String) {
         job?.cancel()
 
         isProcessing.value = true
         job = scope.launch {
-            logs += prompt
-            val actualPrompt = prompt.split(">").last().trim()
-            
-            try {
+            logs += "PROMPT: $prompt"
+
+            runCatching {
                 // Create a wrapper that captures console logs and handles all edge cases
                 val wrappedPrompt = """
                     (async function() {
@@ -51,7 +43,7 @@ class Console {
                         
                         // Override console methods to capture output
                         console.log = (...args) => {
-                            capturedLogs.push('LOG: ' + args.map(arg => 
+                            capturedLogs.push(args.map(arg => 
                                 typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
                             ).join(' '));
                             originalConsole.log(...args);
@@ -85,16 +77,34 @@ class Console {
                             originalConsole.debug(...args);
                         };
                         
+                        // Function to restore console methods
+                        const restoreConsole = () => {
+                            console.log = originalConsole.log;
+                            console.error = originalConsole.error;
+                            console.warn = originalConsole.warn;
+                            console.info = originalConsole.info;
+                            console.debug = originalConsole.debug;
+                        };
+                        
                         let result;
                         let errorOccurred = false;
                         let errorMessage = '';
                         
                         try {
-                            result = ${actualPrompt.removeSuffix(";")};
+                            result = ${prompt.removeSuffix(";")};
                             
-                            // Handle promises
+                            // Handle promises - wait for them to complete before restoring console
                             if (result && typeof result.then === 'function') {
-                                result = await result;
+                                // Wait a bit more to ensure all promise chains and console logs are captured
+                                result = await Promise.race([
+                                    result,
+                                    new Promise((_, reject) => 
+                                        setTimeout(() => reject(new Error('Promise timeout after 10 seconds')), 10000)
+                                    )
+                                ]);
+                                
+                                // Give a small delay to ensure any remaining console logs in promise chains are captured
+                                await new Promise(resolve => setTimeout(resolve, 100));
                             }
                             
                         } catch (error) {
@@ -102,12 +112,8 @@ class Console {
                             errorMessage = 'JavaScript Error: ' + error.message;
                             capturedLogs.push('ERROR: ' + error.message);
                         } finally {
-                            // Restore original console methods
-                            console.log = originalConsole.log;
-                            console.error = originalConsole.error;
-                            console.warn = originalConsole.warn;
-                            console.info = originalConsole.info;
-                            console.debug = originalConsole.debug;
+                            // Restore console methods after all promises are resolved
+                            restoreConsole();
                         }
                         
                         // Format the final output
@@ -144,7 +150,7 @@ class Console {
                             
                             // Only add result if it's not empty and not just whitespace
                             if (resultString.trim() !== '') {
-                                output.push("RESULT: " + resultString);
+                                output.push(resultString);
                             }
                         }
                         
@@ -152,29 +158,25 @@ class Console {
                         return output.length > 0 ? output.join('\n') : 'No output';
                     })()
                 """.trimIndent()
-                
-                val result = jsEval(wrappedPrompt)
-                
+
+                val result = runCatching { jsEval(wrappedPrompt) }
+                    .onFailure { e -> logs += "Execution Error: $e" }
+                    .getOrNull() ?: return@launch
+
                 // Safely handle the promise result
-                val finalResult = try {
+                val finalResult = runCatching {
                     result.unsafeCast<Promise<JsAny>>().await<JsAny>()
-                } catch (e: Exception) {
-                    "Promise Error: ${e.message}"
-                }
-                
+                }.getOrElse { e -> "Promise Error: ${e.message}" }
+
                 // Safely convert to string
-                val resultString = try {
+                val resultString = runCatching {
                     finalResult?.toString() ?: "null"
-                } catch (e: Exception) {
-                    "Conversion Error: ${e.message}"
-                }
-                
+                }.getOrElse { e -> "Conversion Error: ${e.message}" }
+
                 logs += resultString
-                
-            } catch (e: Exception) {
-                logs += "Evaluation Error: ${e.message ?: "Unknown error"}"
-            }
-            
+
+            }.onFailure { e -> logs += "Evaluation Error: ${e.message ?: "Unknown error"}" }
+
             isProcessing.value = false
         }
     }
