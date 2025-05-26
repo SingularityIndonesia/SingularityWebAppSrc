@@ -5,28 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Console</title>
     <link type="text/css" rel="stylesheet" href="styles.css">
-    <script type="application/javascript">
-        // Define the external jsEval function for Kotlin/Wasm interop
-        // Make it available globally
-        window.jsEval = function(code) {
-            try {
-                console.log("jsEval called with:", code);
-                var result = window.eval(code);
-                console.log("jsEval result:", result);
-                return String(result);
-            } catch (e) {
-                console.error("jsEval error:", e);
-                return "Error: " + e.message;
-            }
-        };
-        
-        // Also make it available as a global function
-        function jsEval(code) {
-            return window.jsEval(code);
-        }
-        
-        console.log("jsEval function defined");
-    </script>
     <script type="application/javascript" src="composeApp.js"></script>
 </head>
 <body>
