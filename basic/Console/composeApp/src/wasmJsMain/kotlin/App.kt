@@ -24,8 +24,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.browser.window
 
-val windowId = window.frameElement?.id
-
 @Composable
 fun App() {
     MaterialTheme {
@@ -74,8 +72,8 @@ fun App() {
 
                             else -> {
                                 // Execute JavaScript in browser console
-                                val result = executeJavaScript(command)
-                                logs.add(result)
+                                val result = eval(command)
+                                logs.add(result.toString())
                             }
                         }
                     }
