@@ -112,20 +112,29 @@ fun Shell() {
                 modifier = Modifier.fillMaxWidth()
             )
         }
-        item(focusRequester) {
-            PromptInput(
-                focusRequester = focusRequester
-            ) { command ->
-                // Add the command to logs
 
-                // Process the command
-                when (command.lowercase().trim()) {
-                    "clear()" -> console.logs.clear()
-                    "" -> {}
-                    else -> console.eval(command)
+        if (!console.isProcessing.value)
+            item(focusRequester) {
+                PromptInput(
+                    focusRequester = focusRequester
+                ) { command ->
+                    // Add the command to logs
+
+                    // Process the command
+                    when (command.lowercase().trim()) {
+                        "clear()" -> console.logs.clear()
+                        "" -> {}
+                        else -> console.eval(command)
+                    }
                 }
             }
-        }
+        else
+            item {
+                Text(
+                    text = "executing..",
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
     }
 
     LaunchedEffect(console.logs.size) {
