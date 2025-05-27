@@ -1,4 +1,4 @@
-package core.experimental
+package core
 
 import kotlinx.browser.document
 import org.w3c.dom.HTMLIFrameElement
@@ -10,11 +10,19 @@ external fun injectFunction(w: Window, name: String, script: String)
 @JsFun(code = "(name, callback) => window[name] = callback")
 external fun setWindowCallback(name: String, callback: (String) -> Unit)
 
-@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-actual class Shell actual constructor(
+open class Process(
+    open val id: String,
+    open val command: String
+) {
+    open fun kill() {
+
+    }
+}
+
+class Shell(
     override val id: String,
 ) : Process(id, "/") {
-    actual val processes = mutableListOf<Process>()
+    val processes = mutableListOf<Process>()
 
     private val nextId: String
         get() = processes
@@ -34,7 +42,7 @@ actual class Shell actual constructor(
      * </div>
      * ```
      */
-    actual fun exec(url: String): Process {
+    fun exec(url: String): Process {
         val proc = Process(id = nextId, command = url)
         val mainContainer = document.getElementById("root")
             ?: throw NullPointerException("Error: no root element found")
@@ -108,7 +116,7 @@ actual class Shell actual constructor(
         }
     }
 
-    actual fun kill(processId: String) {
+    fun kill(processId: String) {
         // remove iframe, and destroy instance
         val proc = processes.find { it.id == processId } ?: return
 
@@ -123,11 +131,11 @@ actual class Shell actual constructor(
         }
     }
 
-    actual fun terminate() {
+    fun terminate() {
         processes.forEach { kill(it.id) }
     }
 
-    actual fun destroy() {
+    fun destroy() {
 
     }
 }

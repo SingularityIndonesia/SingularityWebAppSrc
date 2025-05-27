@@ -16,21 +16,31 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
  * USA
  */
-package core.design
 
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import core.Shell
+import kotlinx.coroutines.launch
 
-object Arrangement {
-    val ChickenSpace = Arrangement.spacedBy(Size.Chicken)
-    val ExtraSmallSpace = Arrangement.spacedBy(Size.ExtraSmall)
-    val SmallSpace = Arrangement.spacedBy(Size.Small)
-    val MediumSpace = Arrangement.spacedBy(Size.Medium)
-    val LargeSpace = Arrangement.spacedBy(Size.Large)
-    val ExtraLargeSpace = Arrangement.spacedBy(Size.ExtraLarge)
-    val WowSpace = Arrangement.spacedBy(Size.Wow)
-    val UnbelieveAbleSpace = Arrangement.spacedBy(Size.UnbelieveAble)
-    val SteveSpace = Arrangement.spacedBy(Size.Steve)
+@Composable
+fun App() {
+    val scope = rememberCoroutineScope()
+    val shell = remember { Shell("main-shell") }
 
-    // im not sure if you need this but just in case
-    val GovernmentSpace = Arrangement.spacedBy(Size.Government)
+    DisposableEffect(shell) {
+
+        val job = scope.launch {
+            shell.exec("/application/Console/index.html")
+        }
+
+        onDispose {
+            job.cancel()
+            scope.launch {
+                shell.terminate()
+                shell.destroy()
+            }
+        }
+    }
 }
