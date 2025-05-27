@@ -16,11 +16,21 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
  * USA
  */
-package lib.io.localstorage
+package core.design
 
-interface LocalStorage {
-    fun set(key: String, data: String)
-    fun get(key: String): String
+import androidx.compose.foundation.layout.Arrangement
+
+object Arrangement {
+    val ChickenSpace = Arrangement.spacedBy(Size.Chicken)
+    val ExtraSmallSpace = Arrangement.spacedBy(Size.ExtraSmall)
+    val SmallSpace = Arrangement.spacedBy(Size.Small)
+    val MediumSpace = Arrangement.spacedBy(Size.Medium)
+    val LargeSpace = Arrangement.spacedBy(Size.Large)
+    val ExtraLargeSpace = Arrangement.spacedBy(Size.ExtraLarge)
+    val WowSpace = Arrangement.spacedBy(Size.Wow)
+    val UnbelieveAbleSpace = Arrangement.spacedBy(Size.UnbelieveAble)
+    val SteveSpace = Arrangement.spacedBy(Size.Steve)
+
+    // im not sure if you need this but just in case
+    val GovernmentSpace = Arrangement.spacedBy(Size.Government)
 }
-
-expect fun getLocalStorage(): LocalStorage

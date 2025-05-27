@@ -41,9 +41,9 @@ import core.Application
 import core.design.Arrangement
 import core.design.Padding
 import core.design.SpaceMedium
+import desktop.composeapp.generated.resources.Res
+import desktop.composeapp.generated.resources.ic_launcher_60
 import org.jetbrains.compose.resources.painterResource
-import singularityuniverse.composeapp.generated.resources.Res
-import singularityuniverse.composeapp.generated.resources.ic_launcher_60
 
 class AppLauncher : Application() {
     override val title: String = "App Launcher (Under development)"

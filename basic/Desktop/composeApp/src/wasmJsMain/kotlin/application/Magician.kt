@@ -34,9 +34,9 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import core.Application
 import core.design.SpaceExtraLarge
+import desktop.composeapp.generated.resources.*
 import lib.open
 import org.jetbrains.compose.resources.painterResource
-import singularityuniverse.composeapp.generated.resources.*
 
 class Magician : Application() {
     override val title: String = "Magician Profile"

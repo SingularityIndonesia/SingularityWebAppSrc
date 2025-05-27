@@ -24,9 +24,9 @@ import androidx.compose.material.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.DpSize
+import desktop.composeapp.generated.resources.Res
+import desktop.composeapp.generated.resources.logo_of_singularity_indonesia
 import org.jetbrains.compose.resources.painterResource
-import singularityuniverse.composeapp.generated.resources.Res
-import singularityuniverse.composeapp.generated.resources.logo_of_singularity_indonesia
 
 abstract class Application {
     // region ui config

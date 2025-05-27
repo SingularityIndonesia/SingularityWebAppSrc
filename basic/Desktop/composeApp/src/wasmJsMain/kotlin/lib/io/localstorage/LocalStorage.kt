@@ -20,7 +20,12 @@ package lib.io.localstorage
 
 import kotlinx.browser.localStorage
 
-actual fun getLocalStorage(): LocalStorage {
+interface LocalStorage {
+    fun set(key: String, data: String)
+    fun get(key: String): String
+}
+
+fun getLocalStorage(): LocalStorage {
     return WasmJsLocalStorage()
 }
 

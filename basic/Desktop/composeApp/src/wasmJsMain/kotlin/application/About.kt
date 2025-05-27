@@ -35,10 +35,10 @@ import core.Application
 import core.design.Overline
 import core.design.SpaceExtraLarge
 import core.design.TextIcon
+import desktop.composeapp.generated.resources.Res
+import desktop.composeapp.generated.resources.logo_of_singularity_indonesia
 import lib.open
 import org.jetbrains.compose.resources.painterResource
-import singularityuniverse.composeapp.generated.resources.Res
-import singularityuniverse.composeapp.generated.resources.logo_of_singularity_indonesia
 
 class About : Application() {
     override val title: String = "About"
