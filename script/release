@@ -10,3 +10,4 @@ script/compile-subproject
 rm -rf composeApp/build/release/
 mkdir composeApp/build/release/
 cp -r composeApp/build/dist/wasmJs/productionExecutable/* composeApp/build/release/
+open composeApp/build/release/
