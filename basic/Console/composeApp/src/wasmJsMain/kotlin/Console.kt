@@ -62,6 +62,9 @@ class Console {
             }.getOrElse { e -> "Conversion Error: ${e.message}" }
 
             logs += resultString
+        }
+
+        job?.invokeOnCompletion {
             isProcessing.value = false
         }
     }

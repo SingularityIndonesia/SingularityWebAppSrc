@@ -139,7 +139,9 @@ fun Shell() {
 
     LaunchedEffect(console.logs.size) {
         listState.scrollToItem(console.logs.size)
-        focusRequester.requestFocus()
+        runCatching {
+            focusRequester.requestFocus()
+        }
     }
 }
 
