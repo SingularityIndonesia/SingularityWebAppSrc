@@ -5,6 +5,9 @@ html, body {
     padding: 0;
     overflow: hidden;
 }
+body {
+    background-color: white;
+}
 .centered-loading {
     position: absolute;
     top: 50%;
