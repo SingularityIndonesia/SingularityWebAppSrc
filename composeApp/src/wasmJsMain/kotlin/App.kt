@@ -32,7 +32,8 @@ fun App() {
     DisposableEffect(shell) {
 
         val job = scope.launch {
-            shell.exec("/application/Console/index.html")
+//            shell.exec("/application/Console/index.html")
+            shell.exec("/application/Desktop/index.html")
         }
 
         onDispose {
