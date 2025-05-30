@@ -19,12 +19,15 @@
 
 package org.singularityuniverse.console
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import org.singularityuniverse.console.pane.Playground
 
 @Composable
 fun App() {
     MaterialTheme {
-
+        Playground(modifier = Modifier.fillMaxSize())
     }
 }
