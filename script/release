@@ -9,5 +9,5 @@ script/compile-subproject
 
 rm -rf app/build/release/
 mkdir app/build/release/
-cp -r app/build/dist/wasmJs/productionExecutable/* composeApp/build/release/
+cp -r app/build/dist/wasmJs/productionExecutable/* app/build/release/
 open app/build/release/
