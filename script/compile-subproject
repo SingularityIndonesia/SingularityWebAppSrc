@@ -4,12 +4,12 @@ rm -rf composeApp/src/wasmJsMain/resources/application/*
 
 # find all associated projects
 # list all directory in ./basic/
-list_sub_projects=$(ls -d ./basic/*/ 2>/dev/null | xargs -n 1 basename)
+list_sub_projects=$(ls -d ./application/*/ 2>/dev/null | xargs -n 1 basename)
 
 # clean all
-#for project in $list_sub_projects; do
-#    ./gradlew :$project:composeApp:clean
-#done
+for project in $list_sub_projects; do
+    ./gradlew :$project:composeApp:clean
+done
 
 # for every subprojects directory, run:
 # - cd target-dir
@@ -25,7 +25,7 @@ wait
 for project in $list_sub_projects; do
     echo "Copying $project distribution files..."
     mkdir -p "composeApp/src/wasmJsMain/resources/application/$project/"
-    cp -r "./basic/$project/composeApp/build/dist/wasmJs/productionExecutable/"* "composeApp/src/wasmJsMain/resources/application/$project/"
+    cp -r "./subproject/$project/composeApp/build/dist/wasmJs/productionExecutable/"* "composeApp/src/wasmJsMain/resources/application/$project/"
 done
 
 echo "All builds are finished!"

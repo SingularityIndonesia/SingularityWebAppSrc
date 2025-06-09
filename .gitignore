@@ -18,3 +18,4 @@ captures
 **/xcshareddata/WorkspaceSettings.xcsettings
 /kotlin-js-store/yarn.lock
 /composeApp/src/wasmJsMain/resources/application/*
+/app/src/wasmJsMain/resources/application/

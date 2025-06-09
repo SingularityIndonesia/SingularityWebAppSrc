@@ -46,7 +46,7 @@ dependencyResolutionManagement {
     }
 }
 
-include(":composeApp")
-includeBuild("basic/Console")
-includeBuild("basic/Desktop")
-includeBuild("basic/AppSketch")
+include(":app")
+includeBuild("application/Console")
+includeBuild("application/Desktop")
+includeBuild("application/AppSketch")

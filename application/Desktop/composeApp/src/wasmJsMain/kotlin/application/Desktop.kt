@@ -54,7 +54,7 @@ class Desktop : Application() {
     override val defaultMinSize: DpSize = DpSize.Unspecified
     private val windowManager = WindowManagerImpl()
     private val applications = mutableStateListOf(
-        AppLauncher(), NumberRecognition(), Calculator(), GameOfLife(), Magician(), About()
+        AppLauncher(), /*NumberRecognition(),*/ /*Calculator(),*/ GameOfLife(), Magician(), About()
     )
     private val windows = mutableStateListOf<Window>()
 

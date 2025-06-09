@@ -1,7 +1,10 @@
 package org.singularityuniverse.console.pane
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -10,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -73,6 +77,12 @@ fun LeftDrawer(modifier: Modifier = Modifier) {
 
     Column(
         modifier = modifier
+            .padding(8.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .border(
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface),
+                shape = RoundedCornerShape(16.dp)
+            )
             .background(MaterialTheme.colorScheme.surface)
     ) {
         TabRow(selectedTabIndex = selectedTabIndex.value) {
@@ -82,7 +92,13 @@ fun LeftDrawer(modifier: Modifier = Modifier) {
                     selectedTabIndex.value = 0
                 }
             ) {
-                Text("Tools")
+                Text(
+                    modifier = Modifier.padding(
+                        vertical = 8.dp,
+                        horizontal = 16.dp
+                    ),
+                    text = "Tools"
+                )
             }
         }
         if (selectedTabIndex.value == 0)
