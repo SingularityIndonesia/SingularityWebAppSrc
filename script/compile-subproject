@@ -25,7 +25,7 @@ wait
 for project in $list_sub_projects; do
     echo "Copying $project distribution files..."
     mkdir -p "app/src/wasmJsMain/resources/application/$project/"
-    cp -r "./subproject/$project/composeApp/build/dist/wasmJs/productionExecutable/"* "app/src/wasmJsMain/resources/application/$project/"
+    cp -r "./application/$project/composeApp/build/dist/wasmJs/productionExecutable/"* "app/src/wasmJsMain/resources/application/$project/"
 done
 
 echo "All builds are finished!"
