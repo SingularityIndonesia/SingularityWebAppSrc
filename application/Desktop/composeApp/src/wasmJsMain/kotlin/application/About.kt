@@ -22,6 +22,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
@@ -72,15 +73,30 @@ class About : Application() {
                 style = MaterialTheme.typography.overline,
                 textAlign = TextAlign.Center
             )
-            TextButton(
-                onClick = {
-                    open("https://github.com/SingularityIndonesia/SingularityWebAppSrc")
-                }
+            Row(
+                horizontalArrangement = spacedBy(16.dp)
             ) {
-                Text(
-                    textAlign = TextAlign.Center,
-                    text = "Source Code",
-                )
+                TextButton(
+                    onClick = {
+                        open("/README.md")
+                    }
+                ) {
+                    Text(
+                        textAlign = TextAlign.Center,
+                        text = "More Info",
+                    )
+                }
+
+                TextButton(
+                    onClick = {
+                        open("https://github.com/SingularityIndonesia/SingularityWebAppSrc")
+                    }
+                ) {
+                    Text(
+                        textAlign = TextAlign.Center,
+                        text = "Source Code",
+                    )
+                }
             }
         }
     }
