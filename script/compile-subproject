@@ -1,6 +1,6 @@
 #!/bin/bash
 # remove all package in composeApp/src/wasmJsMain/resources/application/sub_project/
-rm -rf composeApp/src/wasmJsMain/resources/application/*
+rm -rf app/src/wasmJsMain/resources/application/*
 
 # find all associated projects
 # list all directory in ./basic/
@@ -24,8 +24,8 @@ wait
 # for every list_sub_projects copy recursively the sub_project/build/dist/wasmJs/productionExecutable/* into composeApp/src/wasmJsMain/resources/application/sub_project/
 for project in $list_sub_projects; do
     echo "Copying $project distribution files..."
-    mkdir -p "composeApp/src/wasmJsMain/resources/application/$project/"
-    cp -r "./subproject/$project/composeApp/build/dist/wasmJs/productionExecutable/"* "composeApp/src/wasmJsMain/resources/application/$project/"
+    mkdir -p "app/src/wasmJsMain/resources/application/$project/"
+    cp -r "./subproject/$project/composeApp/build/dist/wasmJs/productionExecutable/"* "app/src/wasmJsMain/resources/application/$project/"
 done
 
 echo "All builds are finished!"

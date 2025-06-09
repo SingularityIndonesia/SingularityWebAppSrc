@@ -4,10 +4,10 @@
 script/compile-subproject
 
 # compile main project
-./gradlew :composeApp:clean
-./gradlew :composeApp:wasmJsBrowserDistribution
+./gradlew :app:clean
+./gradlew :app:wasmJsBrowserDistribution
 
-rm -rf composeApp/build/release/
-mkdir composeApp/build/release/
-cp -r composeApp/build/dist/wasmJs/productionExecutable/* composeApp/build/release/
-open composeApp/build/release/
+rm -rf app/build/release/
+mkdir app/build/release/
+cp -r app/build/dist/wasmJs/productionExecutable/* composeApp/build/release/
+open app/build/release/
