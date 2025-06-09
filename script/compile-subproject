@@ -7,9 +7,9 @@ rm -rf app/src/wasmJsMain/resources/application/*
 list_sub_projects=$(ls -d ./application/*/ 2>/dev/null | xargs -n 1 basename)
 
 # clean all
-for project in $list_sub_projects; do
-    ./gradlew :$project:composeApp:clean
-done
+#for project in $list_sub_projects; do
+#    ./gradlew :$project:composeApp:clean
+#done
 
 # for every subprojects directory, run:
 # - cd target-dir
