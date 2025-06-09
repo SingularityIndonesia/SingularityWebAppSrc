@@ -120,12 +120,8 @@ See [LICENSE.txt](LICENSE.txt) for the full license text.
 
 ## 🆘 Support
 
-If you encounter any issues or have questions:
-
-1. Check the [existing issues](../../issues)
-2. Create a new issue with detailed information
-3. Join the discussion in [#compose-web](https://slack-chats.kotlinlang.org/c/compose-web) Slack channel
-4. Report bugs on [YouTrack](https://youtrack.jetbrains.com/newIssue?project=CMP)
+If you encounter any issues or have questions, report on the main repository page:
+https://github.com/SingularityIndonesia/SingularityWebAppSrc
 
 ## 📈 Roadmap
 
